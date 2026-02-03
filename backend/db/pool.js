@@ -2,11 +2,8 @@ import pg from "pg";
 const { Pool } = pg;
 
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "school_db",      // <-- ชื่อ DB ของคุณ
-  password: "1234",      // <-- รหัส PostgreSQL ของคุณ
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
 export default pool;
