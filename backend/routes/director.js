@@ -56,14 +56,34 @@ router.get("/summary", async (req, res) => {
 // STUDENTS CRUD
 router.get("/students", async (req, res) => {
     try {
-        const { search } = req.query;
-        const q = search ? `%${search}%` : null;
+        const { search, class_level, room } = req.query;
+
+        const params = [];
+        const where = [];
+
+        if (search) {
+            params.push(`%${search}%`);
+            where.push(
+                `(student_code ILIKE $${params.length} OR first_name ILIKE $${params.length} OR last_name ILIKE $${params.length})`
+            );
+        }
+
+        if (class_level) {
+            params.push(class_level);
+            where.push(`class_level = $${params.length}`);
+        }
+
+        if (room) {
+            params.push(room);
+            where.push(`(classroom = $${params.length} OR room = $${params.length})`);
+        }
+
         const result = await pool.query(
             `SELECT id, student_code, first_name, last_name, class_level, classroom, room, photo_url
              FROM students
-             WHERE ($1::text IS NULL OR student_code ILIKE $1 OR first_name ILIKE $1 OR last_name ILIKE $1)
+             ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
              ORDER BY student_code ASC`,
-            [q]
+            params
         );
         res.json(result.rows);
     } catch (err) {
