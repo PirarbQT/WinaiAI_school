@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียนเรียน - นักเรียน</title>
+
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="student"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>นักเรียน</span>
+            </div>
+        </div>
+
+                        <ul class="menu-list">
+            <li><a href="registration.html" class="menu-item active"><i class="fa-solid fa-file-signature"></i> ลงทะเบียนเรียน</a></li>
+            <li><a href="schedule.html" class="menu-item"><i class="fa-solid fa-table"></i> ตารางเรียน</a></li>
+            <li><a href="profile.html" class="menu-item"><i class="fa-solid fa-id-card"></i> ข้อมูลส่วนตัว</a></li>
+            <li><a href="grades.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> ผลการศึกษา</a></li>
+            <li><a href="health.html" class="menu-item"><i class="fa-solid fa-hand-holding-heart"></i> ผลประเมินสุขภาพ</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-chalkboard-user"></i> ประเมินการเรียนการสอน</a></li>
+            <li><a href="learning_results.html" class="menu-item"><i class="fa-solid fa-chart-bar"></i> ผลประเมินการเรียน</a></li>
+            <li><a href="conduct.html" class="menu-item"><i class="fa-solid fa-star"></i> ผลคะแนนความประพฤติ</a></li>
+            <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-bullhorn"></i> ปฏิทินกิจกรรม</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logout()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper student-page">
+        <section class="student-hero">
+            <div>
+                <div class="student-kicker">Registration</div>
+                <h1 class="student-title">ลงทะเบียนรายวิชา</h1>
+                <p class="student-subtitle">ค้นหาและจัดการตะกร้ารายวิชาในที่เดียว</p>
+            </div>
+            <div class="student-hero-cards">
+                <div class="student-hero-card">
+                    <div class="student-hero-label">ปีการศึกษา</div>
+                    <div class="student-hero-value" id="regHeroYear">-</div>
+                </div>
+                <div class="student-hero-card">
+                    <div class="student-hero-label">ภาคเรียน</div>
+                    <div class="student-hero-value" id="regHeroTerm">-</div>
+                </div>
+                <div class="student-hero-card">
+                    <div class="student-hero-label">รายวิชาในตะกร้า</div>
+                    <div class="student-hero-value" id="regHeroCount">0</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fa-solid fa-sliders"></i> เลือกปีการศึกษาและภาคเรียน</h3>
+                <span class="student-pill">ตั้งค่าเริ่มต้นการลงทะเบียน</span>
+            </div>
+            <div class="student-grid">
+                <div>
+                    <label>ปีการศึกษา</label>
+                    <select id="regYear" class="custom-select">
+                        <option value="2568">2568</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ภาคเรียน</label>
+                    <select id="regSemester" class="custom-select">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div class="student-note">เลือกปี/เทอม แล้วค้นหาวิชาที่เปิดสอนในช่วงนั้น</div>
+            </div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fas fa-search"></i> ค้นหารายวิชาที่เปิดสอน</h3>
+                <span class="student-pill">ค้นด้วยรหัสหรือชื่อวิชา</span>
+            </div>
+            <div class="student-actions">
+                <input type="text" id="subjectSearch" class="custom-select" placeholder="ค้นหารหัส หรือชื่อวิชา เช่น TH101, คณิตศาสตร์...">
+                <button class="btn-primary" id="btnSearch">
+                    <i class="fas fa-search"></i> ค้นหา
+                </button>
+            </div>
+            <div id="searchResult" style="margin-top: 16px;"></div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fas fa-shopping-basket"></i> รายวิชาที่เลือกไว้</h3>
+                <span class="student-pill">จัดการตะกร้ารายวิชา</span>
+            </div>
+            <div class="table-container">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>รหัสวิชา</th>
+                            <th>ชื่อรายวิชา</th>
+                            <th class="center">หน่วยกิต</th>
+                            <th>วัน/เวลา</th>
+                            <th class="center">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cartItems">
+                        <tr>
+                            <td colspan="5" class="center">กำลังโหลด...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="../../js/registration.js"></script>
+    <script type="module" src="../../js/app.js"></script>
+
+    <script type="module">
+        import { logout } from "../../js/app.js";
+        window.logout = logout;
+    </script>
+
+</body>
+</html>

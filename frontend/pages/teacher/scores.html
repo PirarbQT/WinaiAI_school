@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กรอกคะแนน - ครู</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="teacher"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ครู</span>
+            </div>
+        </div>
+<ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
+            <li><a href="attendance.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
+            <li><a href="scores.html" class="menu-item active"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
+            <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="calendar.html" class="menu-item"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logoutTeacher()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper teacher-page">
+
+        <div class="page-header">
+            <div class="page-title">ระบบกรอกคะแนน</div>
+        </div>
+
+        <div class="score-select-section">
+
+            <div class="score-field">
+                <label>เลือกวิชา</label>
+                <select id="subjectSelect"></select>
+            </div>
+
+            <div class="score-field">
+                <label>ระดับชั้น</label>
+                <select id="levelSelect">
+                    <option value="ม.1">ม.1</option>
+                    <option value="ม.2">ม.2</option>
+                    <option value="ม.3">ม.3</option>
+                    <option value="ม.4">ม.4</option>
+                    <option value="ม.5">ม.5</option>
+                    <option value="ม.6">ม.6</option>
+                </select>
+            </div>
+
+            <div class="score-field">
+                <label>ห้อง</label>
+                <select id="roomSelect">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+
+            <div class="score-field score-action">
+                <label>&nbsp;</label>
+                <button class="btn-primary" id="loadHeadersBtn">โหลดหัวข้อคะแนน</button>
+            </div>
+
+        </div>
+
+
+        <div class="score-header-form">
+            <h2 style="margin-top:40px;">หัวข้อคะแนน</h2>
+
+            <div id="headerList" style="margin-top:10px; display:flex; flex-direction:column; gap:15px;"></div>
+            <div class="header-form-action" style="margin-top: 16px;">
+                <button class="btn-primary" id="openHeaderModalBtn">เพิ่มหัวข้อคะแนน</button>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="modal" id="headerModal">
+        <div class="modal-backdrop" data-modal-close="headerModal"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>เพิ่มหัวข้อคะแนน</h3>
+                <button class="modal-close" data-modal-close="headerModal">×</button>
+            </div>
+            <div class="score-form-grid header-form-grid">
+                <div class="header-form-field">
+                    <label>ชื่อหัวข้อคะแนน</label>
+                    <input type="text" id="headerName" placeholder="เช่น เก็บคะแนน, งานที่ 1">
+                </div>
+                <div class="header-form-field header-form-field--small">
+                    <label>คะแนนเต็ม</label>
+                    <input type="number" id="maxScore" placeholder="เช่น 10">
+                </div>
+                <div class="header-form-action">
+                    <span class="sr-only">เพิ่มหัวข้อคะแนน</span>
+                    <button class="btn-primary" id="addHeaderBtn">เพิ่มหัวข้อคะแนน</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../../js/teacher_scores.js"></script>
+</body>
+
+</html>

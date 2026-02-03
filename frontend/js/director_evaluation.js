@@ -1,0 +1,356 @@
+import { requireDirectorLogin, qs, setState, clearFieldErrors, setFieldError, getDirector, openModal } from "./app.js";
+import { API_BASE, FILE_BASE } from "./config.js";
+
+let studentList = [];
+let studentEvalRows = [];
+
+window.onload = async () => {
+    requireDirectorLogin();
+
+    qs("#loadEvalBtn").addEventListener("click", () => {
+        loadEvaluation();
+        loadTopics();
+    });
+
+    qs("#evalStudentSearch").addEventListener("input", (e) => {
+        renderStudentOptions(e.target.value);
+    });
+
+    qs("#openStudentEvalModalBtn").addEventListener("click", () => {
+        openModal("studentEvalModal");
+    });
+    qs("#openTopicModalBtn").addEventListener("click", () => {
+        openModal("topicModal");
+    });
+
+    qs("#loadStudentEvalBtn").addEventListener("click", loadStudentEvaluation);
+    qs("#addEvalRowBtn").addEventListener("click", addStudentEvalRow);
+    qs("#saveStudentEvalBtn").addEventListener("click", saveStudentEvaluation);
+
+    qs("#reloadTopicsBtn").addEventListener("click", loadTopics);
+    qs("#evalTopicBody").addEventListener("click", handleTopicActions);
+    qs("#evalStudentBody").addEventListener("click", handleStudentRowActions);
+
+    await loadStudents();
+    await loadEvaluation();
+    await loadTopics();
+};
+
+function getFilters() {
+    const year = qs("#evalYear").value.trim();
+    const semester = qs("#evalSemester").value.trim();
+    return { year, semester };
+}
+
+function getDirectorCode() {
+    const director = getDirector();
+    return director?.director_code || "";
+}
+
+async function loadEvaluation() {
+    const { year, semester } = getFilters();
+    setState(qs("#evaluationBody"), "loading", "กำลังโหลดข้อมูล...");
+
+    const params = new URLSearchParams();
+    if (year) params.append("year", year);
+    if (semester) params.append("semester", semester);
+
+    const res = await fetch(`${API_BASE}/director/evaluation/summary?${params.toString()}`);
+    const rows = await res.json();
+
+    const body = qs("#evaluationBody");
+    body.innerHTML = "";
+    if (!rows.length) {
+        body.innerHTML = `<tr><td colspan="2" style="text-align:center; padding:20px;">ไม่มีข้อมูล</td></tr>`;
+        return;
+    }
+
+    rows.forEach((item) => {
+        body.innerHTML += `
+            <tr>
+                <td>${item.name}</td>
+                <td>${Number(item.avg_score || 0).toFixed(2)}</td>
+            </tr>
+        `;
+    });
+}
+
+async function loadTopics() {
+    const { year, semester } = getFilters();
+    qs("#evalTopicBody").innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">กำลังโหลดหัวข้อ...</td></tr>`;
+
+    const params = new URLSearchParams();
+    if (year) params.append("year", year);
+    if (semester) params.append("semester", semester);
+
+    const res = await fetch(`${API_BASE}/director/evaluation/topics?${params.toString()}`);
+    const rows = await res.json();
+
+    const body = qs("#evalTopicBody");
+    body.innerHTML = "";
+
+    if (!rows.length) {
+        body.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">ไม่มีข้อมูลหัวข้อ</td></tr>`;
+        return;
+    }
+
+    rows.forEach((item) => {
+        body.innerHTML += `
+            <tr>
+                <td>${item.name}</td>
+                <td class="center">${Number(item.avg_score || 0).toFixed(2)}</td>
+                <td class="center">${item.total}</td>
+                <td><input class="table-input" type="text" data-role="rename" data-name="${item.name}" placeholder="พิมพ์ชื่อใหม่"></td>
+                <td class="center">
+                    <button class="btn-outline btn-sm" data-action="rename" data-name="${item.name}">เปลี่ยนชื่อ</button>
+                    <button class="btn-danger btn-sm" data-action="delete" data-name="${item.name}">ลบ</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function loadStudents() {
+    const res = await fetch(`${API_BASE}/director/students`);
+    studentList = await res.json();
+    renderStudentOptions("");
+}
+
+function renderStudentOptions(keyword) {
+    const select = qs("#evalStudentSelect");
+    const search = keyword.trim().toLowerCase();
+    select.innerHTML = "";
+
+    const filtered = !search
+        ? studentList
+        : studentList.filter((s) => {
+            const name = `${s.first_name || ""} ${s.last_name || ""}`.toLowerCase();
+            return name.includes(search) || String(s.student_code || "").includes(search);
+        });
+
+    if (!filtered.length) {
+        select.innerHTML = `<option value="">ไม่พบข้อมูลนักเรียน</option>`;
+        return;
+    }
+
+    filtered.forEach((s) => {
+        const name = `${s.first_name || ""} ${s.last_name || ""}`.trim();
+        const label = `${s.student_code || "-"} - ${name || "ไม่มีชื่อ"}`;
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = label;
+        select.appendChild(opt);
+    });
+}
+
+async function loadStudentEvaluation() {
+    const studentId = qs("#evalStudentSelect").value;
+    const { year, semester } = getFilters();
+
+    if (!studentId) {
+        alert("กรุณาเลือกนักเรียน");
+        return;
+    }
+    if (!year || !semester) {
+        alert("กรุณาระบุปีการศึกษาและภาคเรียน");
+        return;
+    }
+
+    qs("#evalStudentBody").innerHTML = `<tr><td colspan="3" style="text-align:center; padding:20px;">กำลังโหลดข้อมูล...</td></tr>`;
+
+    const params = new URLSearchParams({ student_id: studentId, year, semester });
+    const res = await fetch(`${API_BASE}/director/evaluation/student?${params.toString()}`);
+    const rows = await res.json();
+    studentEvalRows = rows;
+    renderStudentEvaluation();
+}
+
+function renderStudentEvaluation() {
+    const body = qs("#evalStudentBody");
+    body.innerHTML = "";
+
+    if (!studentEvalRows.length) {
+        body.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:20px;">ยังไม่มีข้อมูล</td></tr>`;
+        return;
+    }
+
+    studentEvalRows.forEach((row, index) => {
+        body.innerHTML += `
+            <tr data-index="${index}">
+                <td><input class="table-input" type="text" value="${row.name || ""}" data-field="name"></td>
+                <td class="center"><input class="table-input center" type="number" min="0" max="100" step="1" value="${row.score ?? ""}" data-field="score"></td>
+                <td class="center"><button class="btn-outline btn-sm" data-action="remove">ลบ</button></td>
+            </tr>
+        `;
+    });
+}
+
+function addStudentEvalRow() {
+    studentEvalRows.push({ name: "", score: "" });
+    renderStudentEvaluation();
+}
+
+function handleStudentRowActions(e) {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+    const row = btn.closest("tr");
+    const index = Number(row?.dataset.index);
+    if (Number.isNaN(index)) return;
+
+    if (btn.dataset.action === "remove") {
+        studentEvalRows.splice(index, 1);
+        renderStudentEvaluation();
+    }
+}
+
+async function saveStudentEvaluation() {
+    clearFieldErrors(qs("#evalStudentBody"));
+
+    const studentId = qs("#evalStudentSelect").value;
+    const { year, semester } = getFilters();
+    const password = qs("#evalPassword").value.trim();
+    const directorCode = getDirectorCode();
+
+    if (!studentId) {
+        alert("กรุณาเลือกนักเรียน");
+        return;
+    }
+    if (!year || !semester) {
+        alert("กรุณาระบุปีการศึกษาและภาคเรียน");
+        return;
+    }
+
+    if (!password) {
+        alert("กรุณากรอกรหัสผ่านผู้อำนวยการ");
+        return;
+    }
+
+    const rows = Array.from(qs("#evalStudentBody").querySelectorAll("tr"));
+    const payload = [];
+    let hasError = false;
+
+    rows.forEach((row) => {
+        const nameInput = row.querySelector("[data-field='name']");
+        const scoreInput = row.querySelector("[data-field='score']");
+        const name = nameInput?.value.trim();
+        const scoreValue = scoreInput?.value.trim();
+
+        if (!name) {
+            setFieldError(nameInput, "กรุณากรอกหัวข้อ");
+            hasError = true;
+            return;
+        }
+
+        if (scoreValue === "") {
+            setFieldError(scoreInput, "กรุณากรอกคะแนน");
+            hasError = true;
+            return;
+        }
+
+        payload.push({ name, score: Number(scoreValue) });
+    });
+
+    if (hasError) return;
+
+    const res = await fetch(`${API_BASE}/director/evaluation/student`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            director_code: directorCode,
+            password,
+            student_id: studentId,
+            year,
+            semester,
+            data: payload
+        })
+    });
+
+    const result = await res.json();
+    if (!res.ok) {
+        alert(result?.error || "บันทึกไม่สำเร็จ");
+        return;
+    }
+
+    alert("บันทึกผลประเมินเรียบร้อย");
+    await loadEvaluation();
+    await loadTopics();
+}
+
+async function handleTopicActions(e) {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    const name = btn.dataset.name;
+    const password = qs("#topicPassword").value.trim();
+    const { year, semester } = getFilters();
+    const directorCode = getDirectorCode();
+
+    if (!password) {
+        alert("กรุณากรอกรหัสผ่านผู้อำนวยการ");
+        return;
+    }
+    if (!year || !semester) {
+        alert("กรุณาระบุปีการศึกษาและภาคเรียน");
+        return;
+    }
+
+    if (action === "rename") {
+        const input = qs(`#evalTopicBody input[data-role="rename"][data-name="${CSS.escape(name)}"]`);
+        const newName = input?.value.trim();
+        if (!newName) {
+            alert("กรุณากรอกชื่อใหม่");
+            return;
+        }
+        if (!confirm(`ต้องการเปลี่ยนชื่อหัวข้อ "${name}" เป็น "${newName}" หรือไม่?`)) return;
+
+        const res = await fetch(`${API_BASE}/director/evaluation/topics/rename`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                director_code: directorCode,
+                password,
+                old_name: name,
+                new_name: newName,
+                year,
+                semester
+            })
+        });
+
+        const result = await res.json();
+        if (!res.ok) {
+            alert(result?.error || "เปลี่ยนชื่อไม่สำเร็จ");
+            return;
+        }
+
+        alert("เปลี่ยนชื่อหัวข้อเรียบร้อย");
+        await loadEvaluation();
+        await loadTopics();
+        return;
+    }
+
+    if (action === "delete") {
+        if (!confirm(`ต้องการลบหัวข้อ "${name}" ทั้งหมดหรือไม่?`)) return;
+        const res = await fetch(`${API_BASE}/director/evaluation/topics`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                director_code: directorCode,
+                password,
+                name,
+                year,
+                semester
+            })
+        });
+
+        const result = await res.json();
+        if (!res.ok) {
+            alert(result?.error || "ลบไม่สำเร็จ");
+            return;
+        }
+
+        alert("ลบหัวข้อเรียบร้อย");
+        await loadEvaluation();
+        await loadTopics();
+    }
+}

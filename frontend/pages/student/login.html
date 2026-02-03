@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบนักเรียน - WinAI School Portal</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        window.location.replace("../login.html");
+    </script>
+</head>
+<body class="student-login">
+
+    <div class="student-login-card">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div class="stat-icon" style="width:48px; height:48px; border-radius:14px; background:rgba(15,118,110,0.12);">
+                <i class="fa-solid fa-graduation-cap" style="color:#0f766e;"></i>
+            </div>
+            <div>
+                <div class="student-kicker">นักเรียน</div>
+                <h2>เข้าสู่ระบบนักเรียน</h2>
+            </div>
+        </div>
+        <p>WinAI International Semi UniverSchool</p>
+
+        <div class="login-form">
+            <label>รหัสนักเรียน</label>
+            <input type="text" id="loginCode" placeholder="เช่น 6501001">
+
+            <label>รหัสผ่าน</label>
+            <input type="password" id="loginPass" placeholder="กรอกรหัสผ่าน">
+
+            <button class="btn-login" onclick="login()">เข้าสู่ระบบ</button>
+        </div>
+
+        <p class="login-footer">© 2025 WinAI School Portal</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script type="module" src="../../js/auth.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - WinAI School</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="student-login">
+
+    <div class="student-login-card login-unified">
+        <div class="login-head">
+            <div class="login-badge">
+                <i class="fa-solid fa-school"></i>
+            </div>
+            <div>
+                <div class="student-kicker">WinAI School</div>
+                <h2 id="roleTitle">เข้าสู่ระบบนักเรียน</h2>
+            </div>
+        </div>
+        <p id="roleSubtitle">เลือกบทบาทก่อนเข้าสู่ระบบ</p>
+
+        <div class="role-tabs" id="roleTabs">
+            <button type="button" class="role-btn active" data-role="student">
+                <i class="fa-solid fa-graduation-cap"></i> นักเรียน
+            </button>
+            <button type="button" class="role-btn" data-role="teacher">
+                <i class="fa-solid fa-chalkboard-user"></i> ครู
+            </button>
+            <button type="button" class="role-btn" data-role="director">
+                <i class="fa-solid fa-user-tie"></i> ผอ
+            </button>
+        </div>
+
+        <form class="login-form" id="loginForm">
+            <label id="codeLabel">รหัสนักเรียน</label>
+            <input type="text" id="loginCode" placeholder="เช่น 6501001" autocomplete="username">
+
+            <label id="passLabel">รหัสผ่าน</label>
+            <input type="password" id="loginPass" placeholder="กรอกรหัสผ่าน" autocomplete="current-password">
+
+            <button class="btn-login" type="submit" id="loginBtn">เข้าสู่ระบบ</button>
+        </form>
+
+        <p class="login-footer">© 2025 WinAI School Portal</p>
+    </div>
+
+    <script type="module" src="../js/unified_login.js"></script>
+</body>
+</html>

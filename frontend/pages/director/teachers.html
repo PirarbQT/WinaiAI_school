@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการครู</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="director"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ผู้อำนวยการ</span>
+            </div>
+        </div>
+
+        <ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> จัดการนักเรียน</a></li>
+            <li><a href="teachers.html" class="menu-item active"><i class="fa-solid fa-user-tie"></i> จัดการครู</a></li>
+            <li><a href="subjects.html" class="menu-item"><i class="fa-solid fa-book"></i> จัดการรายวิชา</a></li>
+            <li><a href="curriculum.html" class="menu-item"><i class="fa-solid fa-layer-group"></i> จัดการหลักสูตร</a></li>
+            <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> กิจกรรม</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ผลประเมิน</a></li>
+            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> การเงิน</a></li>
+            <li><a href="student_count.html" class="menu-item"><i class="fa-solid fa-chart-column"></i> สถิตินักเรียน</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logoutDirector()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper director-page">
+        <section class="director-hero">
+            <div>
+                <div class="director-kicker">Teacher Management</div>
+                <h1 class="director-title">จัดการข้อมูลครู</h1>
+                <p class="director-subtitle">ค้นหา เพิ่ม แก้ไข และดูข้อมูลครู</p>
+            </div>
+        </section>
+
+        <section class="director-section">
+            <div class="director-section-head">
+                <h3><i class="fa-solid fa-filter"></i> ค้นหาครู</h3>
+                <span class="director-pill">ค้นหา/กรอง</span>
+            </div>
+            <div class="director-search">
+                <input type="text" id="teacherSearch" placeholder="ค้นหา ชื่อ รหัส วิชา">
+                <button class="btn-primary" id="searchTeacherBtn">ค้นหา</button>
+            </div>
+        </section>
+
+        <section class="director-section">
+            <div class="director-section-head">
+                <h3><i class="fa-solid fa-user-plus"></i> เพิ่ม/แก้ไขครู</h3>
+                <span class="director-pill">ข้อมูลครู</span>
+            </div>
+            <div class="director-actions">
+                <button class="btn-primary" id="openTeacherModalBtn">เพิ่มครู</button>
+            </div>
+        </section>
+
+        <section class="director-section">
+            <div class="director-section-head">
+                <h3><i class="fa-solid fa-list"></i> รายชื่อครู</h3>
+                <span class="director-pill">จัดการ</span>
+            </div>
+            <div id="teachersTableBox">
+                <table class="director-table">
+                    <thead>
+                        <tr>
+                            <th>รหัส</th>
+                            <th>ชื่อ-สกุล</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teachersBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal" id="teacherModal">
+        <div class="modal-backdrop" data-modal-close="teacherModal"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>เพิ่ม/แก้ไขครู</h3>
+                <button class="modal-close" data-modal-close="teacherModal">×</button>
+            </div>
+            <div class="director-form-grid">
+                <input type="hidden" id="teacherId">
+                <div>
+                    <label>รหัสครู</label>
+                    <input type="text" id="teacherCode" placeholder="เช่น T100">
+                </div>
+                <div>
+                    <label>ชื่อ</label>
+                    <input type="text" id="teacherFirst">
+                </div>
+                <div>
+                    <label>นามสกุล</label>
+                    <input type="text" id="teacherLast">
+                </div>
+                <div>
+                    <label>รหัสผ่านเริ่มต้น</label>
+                    <input type="text" id="teacherPass" placeholder="เช่น 1234">
+                </div>
+            </div>
+            <div class="director-actions" style="margin-top:14px;">
+                <button class="btn-primary" id="saveTeacherBtn">บันทึก</button>
+                <button class="btn-outline" id="resetTeacherBtn">ล้างค่า</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../../js/app.js"></script>
+    <script type="module" src="../../js/director_teachers.js"></script>
+</body>
+</html>
+

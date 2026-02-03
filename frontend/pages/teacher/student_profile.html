@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรไฟล์นักเรียน</title>
+
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="teacher"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ครู</span>
+            </div>
+        </div>
+<ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item active"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
+            <li><a href="attendance.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
+            <li><a href="scores.html" class="menu-item"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
+            <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="calendar.html" class="menu-item"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logoutTeacher()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper teacher-page">
+
+        <div class="page-header">
+            <div class="page-title">โปรไฟล์นักเรียน</div>
+        </div>
+
+        <div id="profileBasic" class="profile-section"></div>
+        <div id="profileAttendance" class="profile-section"></div>
+        <div id="profileConduct" class="profile-section"></div>
+        <div id="profileGrades" class="profile-section"></div>
+        <div id="profileHealth" class="profile-section"></div>
+
+        <button class="btn-outline" onclick="history.back()" style="margin-top:20px;">
+            <i class="fa-solid fa-arrow-left"></i> กลับไปหน้าก่อนหน้า
+        </button>
+
+    </main>
+
+    <script type="module" src="../../js/app.js"></script>
+    <script type="module" src="../../js/teacher_student_profile.js"></script>
+</body>
+</html>

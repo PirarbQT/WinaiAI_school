@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แดชบอร์ดครู</title>
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="teacher"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ครู</span>
+            </div>
+        </div>
+<ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item active"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
+            <li><a href="attendance.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
+            <li><a href="scores.html" class="menu-item"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
+            <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="calendar.html" class="menu-item"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logoutTeacher()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-wrapper teacher-page dashboard-page">
+        <section class="dash-hero">
+            <div class="hero-shape hero-shape-1"></div>
+            <div class="hero-shape hero-shape-2"></div>
+            <div class="hero-content">
+                <div class="hero-kicker">Teacher Console</div>
+                <h1 class="hero-title">สวัสดี, <span id="teacherNameBox">-</span></h1>
+                <div class="hero-meta">
+                    <span class="chip"><i class="fa-regular fa-calendar"></i> <span id="todayDate">-</span></span>
+                    <span class="chip"><i class="fa-regular fa-clock"></i> <span id="todayTime">-</span></span>
+                    <span class="chip chip-soft"><i class="fa-solid fa-bolt"></i> พร้อมใช้งาน</span>
+                </div>
+                <div class="hero-actions">
+                    <a href="attendance.html" class="btn-hero">เช็คชื่อวันนี้</a>
+                    <a href="scores.html" class="btn-hero ghost">กรอกคะแนน</a>
+                </div>
+            </div>
+            <div class="hero-side">
+                <div class="hero-card">
+                    <div class="hero-card-title">ภาพรวมวันนี้</div>
+                    <div class="hero-card-row">
+                        <span>เช็คชื่อ</span>
+                        <strong id="countTodayAttendance">—</strong>
+                    </div>
+                    <div class="hero-card-row">
+                        <span>กิจกรรมใกล้ถึง</span>
+                        <strong id="countUpcomingEvents">0</strong>
+                    </div>
+                    <div class="hero-card-row">
+                        <span>งานด่วน</span>
+                        <strong>2</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stat-grid">
+            <div class="stat-tile accent-blue">
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="stat-body">
+                    <div class="stat-label">จำนวนนักเรียน</div>
+                    <div class="stat-value" id="countStudents">0</div>
+                </div>
+            </div>
+            <div class="stat-tile accent-green">
+                <div class="stat-icon"><i class="fa-solid fa-book"></i></div>
+                <div class="stat-body">
+                    <div class="stat-label">วิชาที่สอน</div>
+                    <div class="stat-value" id="countSubjects">0</div>
+                </div>
+            </div>
+            <div class="stat-tile accent-gold">
+                <div class="stat-icon"><i class="fa-solid fa-pen-nib"></i></div>
+                <div class="stat-body">
+                    <div class="stat-label">หัวข้อคะแนน</div>
+                    <div class="stat-value" id="countScoreItems">—</div>
+                </div>
+            </div>
+            <div class="stat-tile accent-brown">
+                <div class="stat-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                <div class="stat-body">
+                    <div class="stat-label">กิจกรรมทั้งหมด</div>
+                    <div class="stat-value" id="countAllEvents">—</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>กิจกรรมใกล้ถึง</h3>
+                    <a href="calendar.html" class="panel-link">ดูทั้งหมด</a>
+                </div>
+                <div id="dashboardEventList" class="event-mini-list"></div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>งานที่ควรทำต่อ</h3>
+                    <span class="panel-tag">แนะนำ</span>
+                </div>
+                <div class="task-list">
+                    <div class="task-item"><span class="task-dot"></span>ตรวจคะแนนกลางภาคของ ม.1/1</div>
+                    <div class="task-item"><span class="task-dot"></span>เพิ่มหัวข้อคะแนนรายวิชาใหม่</div>
+                    <div class="task-item"><span class="task-dot"></span>อัปเดตปฏิทินเดือนนี้</div>
+                </div>
+            </div>
+            <div class="panel wide">
+                <div class="panel-header">
+                    <h3>สรุปความคืบหน้า</h3>
+                    <span class="panel-tag soft">สัปดาห์นี้</span>
+                </div>
+                <div class="progress-grid">
+                    <div class="progress-card">
+                        <div class="progress-title">เช็คชื่อ</div>
+                        <div class="progress-bar"><span style="width:68%"></span></div>
+                        <div class="progress-meta">สำเร็จ 68%</div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-title">กรอกคะแนน</div>
+                        <div class="progress-bar"><span style="width:42%"></span></div>
+                        <div class="progress-meta">สำเร็จ 42%</div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-title">ตัดเกรด</div>
+                        <div class="progress-bar"><span style="width:20%"></span></div>
+                        <div class="progress-meta">สำเร็จ 20%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="../../js/teacher_dashboard.js"></script>
+</body>
+
+</html>
+
+

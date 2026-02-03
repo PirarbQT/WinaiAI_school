@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายชื่อนักเรียน</title>
+
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="teacher"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ครู</span>
+            </div>
+        </div>
+<ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item active"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
+            <li><a href="attendance.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
+            <li><a href="scores.html" class="menu-item"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
+            <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="calendar.html" class="menu-item"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logoutTeacher()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <!-- Main area -->
+    <main class="main-wrapper teacher-page students-page">
+
+        <section class="students-hero">
+            <div>
+                <div class="students-kicker">Homeroom</div>
+                <h1 class="students-title">รายชื่อนักเรียน</h1>
+                <p class="students-subtitle">ดูรายชื่อ สถานะ และเข้าถึงโปรไฟล์นักเรียนได้อย่างรวดเร็ว</p>
+            </div>
+            <div class="students-hero-card">
+                <div class="students-hero-label">สถานะวันนี้</div>
+                <div class="students-hero-value">พร้อมดูรายชื่อ</div>
+            </div>
+        </section>
+
+        <section class="students-info-card">
+            <div class="students-info-header">
+                <h3>ข้อมูลห้องเรียน</h3>
+                <span class="students-pill">อัปเดตล่าสุด</span>
+            </div>
+            <div id="classInfo" class="class-info-box"></div>
+            <div class="students-filter">
+                <div>
+                    <label>ระดับชั้น</label>
+                    <select id="classLevelFilter" class="custom-select">
+                        <option value="">ทั้งหมด</option>
+                        <option value="ม.1">ม.1</option>
+                        <option value="ม.2">ม.2</option>
+                        <option value="ม.3">ม.3</option>
+                        <option value="ม.4">ม.4</option>
+                        <option value="ม.5">ม.5</option>
+                        <option value="ม.6">ม.6</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ห้อง</label>
+                    <select id="roomFilter" class="custom-select">
+                        <option value="">ทั้งหมด</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="students-filter-action">
+                    <button class="btn-primary" id="applyFilterBtn">แสดงรายชื่อ</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="students-list-card">
+            <div class="students-info-header">
+                <h3>รายชื่อนักเรียน</h3>
+                <span class="students-pill soft">คลิกเพื่อดูโปรไฟล์</span>
+            </div>
+            <div id="studentList" class="student-grid"></div>
+        </section>
+
+    </main>
+
+    <script type="module" src="../../js/app.js"></script>
+    <script type="module" src="../../js/teacher_students.js"></script>
+
+</body>
+</html>
+
+

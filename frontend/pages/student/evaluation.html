@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประเมินการเรียนการสอน - นักเรียน</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="student"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>นักเรียน</span>
+            </div>
+        </div>
+
+                        <ul class="menu-list">
+            <li><a href="registration.html" class="menu-item"><i class="fa-solid fa-file-signature"></i> ลงทะเบียนเรียน</a></li>
+            <li><a href="schedule.html" class="menu-item"><i class="fa-solid fa-table"></i> ตารางเรียน</a></li>
+            <li><a href="profile.html" class="menu-item"><i class="fa-solid fa-id-card"></i> ข้อมูลส่วนตัว</a></li>
+            <li><a href="grades.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> ผลการศึกษา</a></li>
+            <li><a href="health.html" class="menu-item"><i class="fa-solid fa-hand-holding-heart"></i> ผลประเมินสุขภาพ</a></li>
+            <li><a href="evaluation.html" class="menu-item active"><i class="fa-solid fa-chalkboard-user"></i> ประเมินการเรียนการสอน</a></li>
+            <li><a href="learning_results.html" class="menu-item"><i class="fa-solid fa-chart-bar"></i> ผลประเมินการเรียน</a></li>
+            <li><a href="conduct.html" class="menu-item"><i class="fa-solid fa-star"></i> ผลคะแนนความประพฤติ</a></li>
+            <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-bullhorn"></i> ปฏิทินกิจกรรม</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logout()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper student-page">
+        <section class="student-hero">
+            <div>
+                <div class="student-kicker">Evaluation</div>
+                <h1 class="student-title">แบบประเมินประสิทธิภาพการสอน</h1>
+                <p class="student-subtitle">ช่วยกันพัฒนาคุณภาพการเรียนการสอนด้วยคะแนนประเมิน</p>
+            </div>
+            <div class="student-hero-cards">
+                <div class="student-hero-card">
+                    <div class="student-hero-label">สถานะ</div>
+                    <div class="student-hero-value" id="evalStatus">รอการประเมิน</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fa-solid fa-filter"></i> เลือกปี/เทอมและรายวิชา</h3>
+                <span class="student-pill">ข้อมูลลงทะเบียน</span>
+            </div>
+            <div class="student-grid">
+                <div>
+                    <label>ปีการศึกษา</label>
+                    <select class="custom-select" id="evalYearSelect">
+                        <option value="2568">2568</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ภาคเรียน</label>
+                    <select class="custom-select" id="evalTermSelect">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div>
+                    <label>วิชาที่ลงทะเบียนเรียน</label>
+                    <select class="custom-select" id="subjectSelect">
+                        <option disabled selected value="">-- กรุณาเลือกวิชา --</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fa-solid fa-user-tie"></i> ข้อมูลผู้สอน</h3>
+                <span class="student-pill">รายละเอียดรายวิชา</span>
+            </div>
+            <div class="student-grid">
+                <div class="student-stat">
+                    <div class="stat-icon"><i class="fa-solid fa-user-tie"></i></div>
+                    <div>
+                        <div class="stat-label">อาจารย์ผู้สอน</div>
+                        <div class="stat-value" id="teacherName">กรุณาเลือกวิชา</div>
+                    </div>
+                </div>
+                <div class="student-stat">
+                    <div class="stat-icon"><i class="fa-solid fa-book-open"></i></div>
+                    <div>
+                        <div class="stat-label">รายวิชา</div>
+                        <div class="stat-value" id="subjectName">-</div>
+                    </div>
+                </div>
+                <div class="student-note">คะแนนประเมินจะถูกบันทึกทันทีหลังส่งแบบประเมิน</div>
+            </div>
+        </section>
+
+        <section class="student-section" id="evaluationFormSection">
+            <div class="student-section-head">
+                <h3><i class="fa-solid fa-list-check"></i> รายการประเมิน</h3>
+                <span class="student-pill">ตอบแบบประเมิน</span>
+            </div>
+            <form id="evalForm">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>หัวข้อประเมิน</th>
+                            <th class="center">5</th>
+                            <th class="center">4</th>
+                            <th class="center">3</th>
+                            <th class="center">2</th>
+                            <th class="center">1</th>
+                        </tr>
+                    </thead>
+                    <tbody id="evalQuestions"></tbody>
+                </table>
+
+                <button type="submit" class="btn-primary" style="margin-top:20px;">
+                    ส่งแบบประเมิน
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script type="module" src="../../js/evaluation.js"></script>
+    <script type="module" src="../../js/app.js"></script>
+
+    <script type="module">
+        import { logout } from "../../js/app.js";
+        window.logout = logout;
+    </script>
+
+</body>
+</html>

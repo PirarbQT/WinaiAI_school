@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สถิตินักเรียน</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="director"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ผู้อำนวยการ</span>
+            </div>
+        </div>
+
+        <ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> จัดการนักเรียน</a></li>
+            <li><a href="teachers.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> จัดการครู</a></li>
+            <li><a href="subjects.html" class="menu-item"><i class="fa-solid fa-book"></i> จัดการรายวิชา</a></li>
+            <li><a href="curriculum.html" class="menu-item"><i class="fa-solid fa-layer-group"></i> จัดการหลักสูตร</a></li>
+            <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> กิจกรรม</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ผลประเมิน</a></li>
+            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> การเงิน</a></li>
+            <li><a href="student_count.html" class="menu-item active"><i class="fa-solid fa-chart-column"></i> สถิตินักเรียน</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logoutDirector()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper director-page">
+        <section class="director-hero">
+            <div>
+                <div class="director-kicker">Student Count</div>
+                <h1 class="director-title">สถิตินักเรียน</h1>
+                <p class="director-subtitle">สรุปจำนวนนักเรียนตามระดับชั้นและห้องเรียน</p>
+            </div>
+            <div class="director-hero-cards">
+                <div class="director-hero-card">
+                    <div class="director-hero-label">จำนวนนักเรียนทั้งหมด</div>
+                    <div class="director-hero-value" id="countTotal">—</div>
+                </div>
+                <div class="director-hero-card">
+                    <div class="director-hero-label">จำนวนระดับชั้น</div>
+                    <div class="director-hero-value" id="countLevels">—</div>
+                </div>
+                <div class="director-hero-card">
+                    <div class="director-hero-label">จำนวนห้อง</div>
+                    <div class="director-hero-value" id="countRooms">—</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="director-section">
+            <div class="director-section-head">
+                <h3><i class="fa-solid fa-filter"></i> ตัวกรอง</h3>
+                <span class="director-pill">ชั้น/ห้อง</span>
+            </div>
+            <div class="director-form-grid">
+                <div>
+                    <label>ระดับชั้น</label>
+                    <input type="text" id="filterLevel" placeholder="เช่น ม.1" />
+                </div>
+                <div>
+                    <label>ห้อง</label>
+                    <input type="text" id="filterRoom" placeholder="เช่น 1" />
+                </div>
+                <div class="director-actions">
+                    <button class="btn-primary" id="applyFilterBtn">ใช้ตัวกรอง</button>
+                    <button class="btn-outline" id="clearFilterBtn">ล้างตัวกรอง</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="director-section">
+            <div class="director-section-head">
+                <h3><i class="fa-solid fa-table"></i> สถิติจำนวนนักเรียน</h3>
+                <span class="director-pill">รายการ</span>
+            </div>
+            <table class="director-table">
+                <thead>
+                    <tr>
+                        <th>ระดับชั้น</th>
+                        <th>ห้อง</th>
+                        <th>จำนวนนักเรียน</th>
+                    </tr>
+                </thead>
+                <tbody id="studentCountBody"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script type="module" src="../../js/app.js"></script>
+    <script type="module" src="../../js/director_student_count.js"></script>
+</body>
+</html>
+

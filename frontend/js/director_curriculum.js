@@ -1,0 +1,141 @@
+import { requireDirectorLogin, qs, clearFieldErrors, setFieldError, openModal, closeModal } from "./app.js";
+import { API_BASE, FILE_BASE } from "./config.js";
+
+let subjects = [];
+let teachers = [];
+let sections = [];
+
+window.onload = async () => {
+    requireDirectorLogin();
+    qs("#openSectionModalBtn").addEventListener("click", () => {
+        resetForm();
+        openModal("sectionModal");
+    });
+    qs("#saveSectionBtn").addEventListener("click", saveSection);
+    qs("#resetSectionBtn").addEventListener("click", () => {
+        resetForm();
+        closeModal("sectionModal");
+    });
+    await loadRefs();
+    await loadSections();
+};
+
+async function loadRefs() {
+    const [subRes, teacherRes] = await Promise.all([
+        fetch(`${API_BASE}/director/subjects`),
+        fetch(`${API_BASE}/director/teachers`)
+    ]);
+    subjects = await subRes.json();
+    teachers = await teacherRes.json();
+
+    const subSelect = qs("#sectionSubject");
+    const teacherSelect = qs("#sectionTeacher");
+    subSelect.innerHTML = "";
+    teacherSelect.innerHTML = "";
+    subjects.forEach((s) => {
+        subSelect.innerHTML += `<option value="${s.id}">${s.subject_code} - ${s.name}</option>`;
+    });
+    teachers.forEach((t) => {
+        teacherSelect.innerHTML += `<option value="${t.id}">${t.teacher_code} - ${t.first_name || ""} ${t.last_name || ""}</option>`;
+    });
+}
+
+async function loadSections() {
+    const res = await fetch(`${API_BASE}/director/sections`);
+    sections = await res.json();
+    renderSections();
+}
+
+function renderSections() {
+    const body = qs("#sectionsBody");
+    body.innerHTML = "";
+    if (!sections.length) {
+        body.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">ไม่มีข้อมูล</td></tr>`;
+        return;
+    }
+    sections.forEach((s) => {
+        body.innerHTML += `
+            <tr>
+                <td>${s.subject_code || "-"}</td>
+                <td>${s.teacher_name || "-"}</td>
+                <td>${s.year}/${s.semester}</td>
+                <td>${s.class_level || "-"} / ${s.classroom || s.room || "-"}</td>
+                <td>${s.day_of_week || "-"} ${s.time_range || ""}</td>
+                <td>
+                    <button class="btn-outline" onclick="editSection(${s.id})">แก้ไข</button>
+                    <button class="btn-danger" onclick="deleteSection(${s.id})">ลบ</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+window.editSection = function(id) {
+    const s = sections.find((x) => x.id === id);
+    if (!s) return;
+    qs("#sectionId").value = s.id;
+    qs("#sectionSubject").value = s.subject_id || "";
+    qs("#sectionTeacher").value = s.teacher_id || "";
+    qs("#sectionYear").value = s.year || 2568;
+    qs("#sectionSemester").value = s.semester || 1;
+    qs("#sectionLevel").value = s.class_level || "";
+    qs("#sectionRoom").value = s.classroom || s.room || "";
+    qs("#sectionDay").value = s.day_of_week || "";
+    qs("#sectionTime").value = s.time_range || "";
+    qs("#sectionClassroom").value = s.room || "";
+    openModal("sectionModal");
+};
+
+window.deleteSection = async function(id) {
+    if (!confirm("ต้องการลบตารางสอนนี้หรือไม่?")) return;
+    await fetch(`${API_BASE}/director/sections/${id}`, { method: "DELETE" });
+    loadSections();
+};
+
+async function saveSection() {
+    clearFieldErrors(document.body);
+    const id = qs("#sectionId").value;
+    const payload = {
+        subject_id: qs("#sectionSubject").value,
+        teacher_id: qs("#sectionTeacher").value,
+        year: Number(qs("#sectionYear").value),
+        semester: Number(qs("#sectionSemester").value),
+        class_level: qs("#sectionLevel").value.trim(),
+        classroom: qs("#sectionRoom").value.trim(),
+        day_of_week: qs("#sectionDay").value.trim(),
+        time_range: qs("#sectionTime").value.trim(),
+        room: qs("#sectionClassroom").value.trim()
+    };
+
+    if (!payload.subject_id || !payload.teacher_id) {
+        if (!payload.subject_id) setFieldError(qs("#sectionSubject"), "กรุณาเลือกรายวิชา");
+        if (!payload.teacher_id) setFieldError(qs("#sectionTeacher"), "กรุณาเลือกครูผู้สอน");
+        return;
+    }
+
+    if (id) {
+        await fetch(`${API_BASE}/director/sections/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+    } else {
+        await fetch(`${API_BASE}/director/sections`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+    }
+    resetForm();
+    loadSections();
+    closeModal("sectionModal");
+}
+
+function resetForm() {
+    qs("#sectionId").value = "";
+    qs("#sectionLevel").value = "";
+    qs("#sectionRoom").value = "";
+    qs("#sectionDay").value = "";
+    qs("#sectionTime").value = "";
+    qs("#sectionClassroom").value = "";
+}

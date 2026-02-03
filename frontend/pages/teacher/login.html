@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบครู - WinAI School Portal</title>
+    <link rel="stylesheet" href="../../css/style.css" />
+    <script>
+        window.location.replace("../login.html");
+    </script>
+</head>
+
+<body class="login-body">
+
+    <div class="login-container">
+        <div class="login-box">
+
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <h2>เข้าสู่ระบบครู</h2>
+                <p>WinAI School</p>
+            </div>
+
+            <div class="login-form">
+                <label>ชื่อผู้ใช้</label>
+                <input type="text" id="loginUser">
+
+                <label>รหัสผ่าน</label>
+                <input type="password" id="loginPass">
+
+                <button class="btn-login" onclick="loginTeacher()">เข้าสู่ระบบ</button>
+            </div>
+
+            <p class="login-footer">© 2025 WinAI School Portal</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script type="module" src="../../js/teacher_auth.js"></script>
+
+    <script type="module">
+        import { loginTeacher } from "../../js/teacher_auth.js";
+        window.loginTeacher = loginTeacher;
+    </script>
+</body>
+</html>

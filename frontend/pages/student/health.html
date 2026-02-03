@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผลประเมินสุขภาพ - นักเรียน</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="student"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>นักเรียน</span>
+            </div>
+        </div>
+
+                        <ul class="menu-list">
+            <li><a href="registration.html" class="menu-item"><i class="fa-solid fa-file-signature"></i> ลงทะเบียนเรียน</a></li>
+            <li><a href="schedule.html" class="menu-item"><i class="fa-solid fa-table"></i> ตารางเรียน</a></li>
+            <li><a href="profile.html" class="menu-item"><i class="fa-solid fa-id-card"></i> ข้อมูลส่วนตัว</a></li>
+            <li><a href="grades.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> ผลการศึกษา</a></li>
+            <li><a href="health.html" class="menu-item active"><i class="fa-solid fa-hand-holding-heart"></i> ผลประเมินสุขภาพ</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-chalkboard-user"></i> ประเมินการเรียนการสอน</a></li>
+            <li><a href="learning_results.html" class="menu-item"><i class="fa-solid fa-chart-bar"></i> ผลประเมินการเรียน</a></li>
+            <li><a href="conduct.html" class="menu-item"><i class="fa-solid fa-star"></i> ผลคะแนนความประพฤติ</a></li>
+            <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-bullhorn"></i> ปฏิทินกิจกรรม</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logout()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper student-page">
+        <section class="student-hero">
+            <div>
+                <div class="student-kicker">Health</div>
+                <h1 class="student-title">สมุดบันทึกสุขภาพ</h1>
+                <p class="student-subtitle">ติดตามค่าสุขภาพและอัปเดตข้อมูลของคุณ</p>
+            </div>
+            <div class="student-hero-cards">
+                <div class="student-hero-card">
+                    <div class="student-hero-label">BMI</div>
+                    <div class="student-hero-value" id="bmiVal">-</div>
+                </div>
+                <div class="student-hero-card">
+                    <div class="student-hero-label">สถานะ</div>
+                    <div class="student-hero-value" id="bmiText">-</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fa-solid fa-chart-line"></i> สรุปสุขภาพวันนี้</h3>
+                <span class="student-pill">สถิติสำคัญ</span>
+            </div>
+            <div class="student-stats">
+                <div class="student-stat">
+                    <div class="stat-icon"><i class="fa-solid fa-weight-scale"></i></div>
+                    <div>
+                        <div class="stat-label">น้ำหนัก (กก.)</div>
+                        <div class="stat-value" id="weightVal">-</div>
+                    </div>
+                </div>
+                <div class="student-stat">
+                    <div class="stat-icon"><i class="fa-solid fa-ruler-vertical"></i></div>
+                    <div>
+                        <div class="stat-label">ส่วนสูง (ซม.)</div>
+                        <div class="stat-value" id="heightVal">-</div>
+                    </div>
+                </div>
+                <div class="student-stat">
+                    <div class="stat-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <div>
+                        <div class="stat-label">ความดันโลหิต</div>
+                        <div class="stat-value" id="bpVal">-</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="student-grid">
+            <div class="student-section">
+                <div class="student-section-head">
+                    <h3><i class="fa-solid fa-file-medical"></i> ข้อมูลทางการแพทย์</h3>
+                    <span class="student-pill">ข้อมูลพื้นฐาน</span>
+                </div>
+                <div class="health-detail-item">
+                    <span>กรุ๊ปเลือด</span>
+                    <strong id="bloodType">-</strong>
+                </div>
+                <div class="health-detail-item">
+                    <span>ประวัติแพ้ยา/อาหาร</span>
+                    <strong id="allergyVal">-</strong>
+                </div>
+                <div class="health-detail-item">
+                    <span>โรคประจำตัว</span>
+                    <strong id="chronicVal">-</strong>
+                </div>
+            </div>
+
+            <div class="student-section">
+                <div class="student-section-head">
+                    <h3><i class="fa-solid fa-pen-to-square"></i> แก้ไขข้อมูลสุขภาพ</h3>
+                    <span class="student-pill">อัปเดตล่าสุด</span>
+                </div>
+                <button type="button" class="btn-primary" id="openHealthModalBtn">
+                    แก้ไขข้อมูลสุขภาพ
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal" id="healthModal">
+        <div class="modal-backdrop" data-modal-close="healthModal"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>แก้ไขข้อมูลสุขภาพ</h3>
+                <button class="modal-close" data-modal-close="healthModal">×</button>
+            </div>
+            <form id="healthForm" class="health-form">
+                <div class="health-row">
+                    <label for="inputWeight">น้ำหนัก (กก.)</label>
+                    <input type="number" id="inputWeight">
+                </div>
+
+                <div class="health-row">
+                    <label for="inputHeight">ส่วนสูง (ซม.)</label>
+                    <input type="number" id="inputHeight">
+                </div>
+
+                <div class="health-row">
+                    <label for="inputBP">ความดันโลหิต</label>
+                    <input type="text" id="inputBP" placeholder="เช่น 120/80">
+                </div>
+
+                <div class="health-row">
+                    <label for="inputBlood">กรุ๊ปเลือด</label>
+                    <input type="text" id="inputBlood">
+                </div>
+
+                <div class="health-row textarea-row">
+                    <label for="inputAllergy">ประวัติแพ้ยา/อาหาร</label>
+                    <textarea id="inputAllergy"></textarea>
+                </div>
+
+                <div class="health-row textarea-row">
+                    <label for="inputChronic">โรคประจำตัว</label>
+                    <textarea id="inputChronic"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top:15px;">
+                    บันทึกข้อมูล
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="../../js/health.js"></script>
+    <script type="module" src="../../js/app.js"></script>
+
+    <script type="module">
+        import { logout } from "../../js/app.js";
+        window.logout = logout;
+    </script>
+
+</body>
+</html>

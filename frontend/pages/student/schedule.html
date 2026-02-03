@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตารางเรียน - นักเรียน</title>
+
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="student"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>นักเรียน</span>
+            </div>
+        </div>
+
+                        <ul class="menu-list">
+            <li><a href="registration.html" class="menu-item"><i class="fa-solid fa-file-signature"></i> ลงทะเบียนเรียน</a></li>
+            <li><a href="schedule.html" class="menu-item active"><i class="fa-solid fa-table"></i> ตารางเรียน</a></li>
+            <li><a href="profile.html" class="menu-item"><i class="fa-solid fa-id-card"></i> ข้อมูลส่วนตัว</a></li>
+            <li><a href="grades.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> ผลการศึกษา</a></li>
+            <li><a href="health.html" class="menu-item"><i class="fa-solid fa-hand-holding-heart"></i> ผลประเมินสุขภาพ</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-chalkboard-user"></i> ประเมินการเรียนการสอน</a></li>
+            <li><a href="learning_results.html" class="menu-item"><i class="fa-solid fa-chart-bar"></i> ผลประเมินการเรียน</a></li>
+            <li><a href="conduct.html" class="menu-item"><i class="fa-solid fa-star"></i> ผลคะแนนความประพฤติ</a></li>
+            <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-bullhorn"></i> ปฏิทินกิจกรรม</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logout()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper student-page">
+        <section class="student-hero">
+            <div>
+                <div class="student-kicker">Schedule</div>
+                <h1 class="student-title">ตารางเรียน / ตารางสอบ</h1>
+                <p class="student-subtitle">เลือกปีการศึกษาและภาคเรียนเพื่อดูตารางล่าสุด</p>
+            </div>
+            <div class="student-hero-cards">
+                <div class="student-hero-card">
+                    <div class="student-hero-label">จำนวนคาบเรียน</div>
+                    <div class="student-hero-value" id="classCount">0</div>
+                </div>
+                <div class="student-hero-card">
+                    <div class="student-hero-label">จำนวนสอบ</div>
+                    <div class="student-hero-value" id="examCount">0</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fa-solid fa-sliders"></i> ตั้งค่าการแสดงผล</h3>
+                <span class="student-pill">ปีการศึกษา / ภาคเรียน</span>
+            </div>
+            <div class="student-actions">
+                <div>
+                    <label>ปีการศึกษา</label>
+                    <select class="custom-select" id="yearSelect">
+                        <option value="2568">2568</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ภาคเรียน</label>
+                    <select class="custom-select" id="termSelect">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div class="student-tabs">
+                    <button id="btn-class" class="tab-btn active">
+                        <i class="fa-solid fa-table"></i> ตารางเรียน
+                    </button>
+                    <button id="btn-exam" class="tab-btn">
+                        <i class="fa-solid fa-file-pen"></i> ตารางสอบ
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="student-section">
+            <div id="classSection">
+                <div class="student-section-head">
+                    <h3>ตารางเรียน</h3>
+                    <span class="student-pill">อัปเดตล่าสุด</span>
+                </div>
+                <div class="schedule-container">
+                    <table class="student-table">
+                        <thead>
+                            <tr>
+                                <th>วัน</th>
+                                <th>เวลา</th>
+                                <th>รหัสวิชา</th>
+                                <th>ชื่อวิชา</th>
+                                <th>ผู้สอน</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="examSection" style="display:none;">
+                <div class="student-section-head" style="margin-top:18px;">
+                    <h3>ตารางสอบ</h3>
+                    <span class="student-pill">กำหนดการสอบ</span>
+                </div>
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>วันที่สอบ</th>
+                            <th>เวลา</th>
+                            <th>รหัสวิชา</th>
+                            <th>ชื่อวิชา</th>
+                            <th>ห้องสอบ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="examTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="../../js/schedule.js"></script>
+    <script type="module" src="../../js/app.js"></script>
+
+    <script type="module">
+        import { logout } from "../../js/app.js";
+        window.logout = logout;
+    </script>
+
+</body>
+</html>

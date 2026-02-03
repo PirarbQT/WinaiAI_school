@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการหลักสูตร</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="director"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ผู้อำนวยการ</span>
+            </div>
+        </div>
+
+        <ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> จัดการนักเรียน</a></li>
+            <li><a href="teachers.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> จัดการครู</a></li>
+            <li><a href="subjects.html" class="menu-item"><i class="fa-solid fa-book"></i> จัดการรายวิชา</a></li>
+            <li><a href="curriculum.html" class="menu-item active"><i class="fa-solid fa-layer-group"></i> จัดการหลักสูตร</a></li>
+            <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> กิจกรรม</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ผลประเมิน</a></li>
+            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> การเงิน</a></li>
+            <li><a href="student_count.html" class="menu-item"><i class="fa-solid fa-chart-column"></i> สถิตินักเรียน</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logoutDirector()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper director-page">
+        <section class="director-hero">
+            <div>
+                <div class="director-kicker">Curriculum</div>
+                <h1 class="director-title">จัดการหลักสูตรการสอน</h1>
+                <p class="director-subtitle">กำหนดวิชา ครู และตารางสอน</p>
+            </div>
+        </section>
+
+        <section class="director-section">
+            <div class="director-section-head">
+                <h3><i class="fa-solid fa-layer-group"></i> เพิ่ม/แก้ไขตารางสอน</h3>
+                <span class="director-pill">ข้อมูลตารางสอน</span>
+            </div>
+            <div class="director-actions">
+                <button class="btn-primary" id="openSectionModalBtn">เพิ่มตารางสอน</button>
+            </div>
+        </section>
+
+        <section class="director-section">
+            <div class="director-section-head">
+                <h3><i class="fa-solid fa-table"></i> ตารางสอน</h3>
+                <span class="director-pill">รายการ</span>
+            </div>
+            <table class="director-table">
+                <thead>
+                    <tr>
+                        <th>รายวิชา</th>
+                        <th>ครูผู้สอน</th>
+                        <th>ปี/เทอม</th>
+                        <th>ระดับ/ห้อง</th>
+                        <th>วัน-เวลา</th>
+                        <th>จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="sectionsBody"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <div class="modal" id="sectionModal">
+        <div class="modal-backdrop" data-modal-close="sectionModal"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>เพิ่ม/แก้ไขตารางสอน</h3>
+                <button class="modal-close" data-modal-close="sectionModal">×</button>
+            </div>
+            <div class="director-form-grid">
+                <input type="hidden" id="sectionId">
+                <div>
+                    <label>รายวิชา</label>
+                    <select id="sectionSubject"></select>
+                </div>
+                <div>
+                    <label>ครูผู้สอน</label>
+                    <select id="sectionTeacher"></select>
+                </div>
+                <div>
+                    <label>ปีการศึกษา</label>
+                    <input type="number" id="sectionYear" value="2568">
+                </div>
+                <div>
+                    <label>ภาคเรียน</label>
+                    <input type="number" id="sectionSemester" value="1">
+                </div>
+                <div>
+                    <label>ระดับชั้น</label>
+                    <input type="text" id="sectionLevel" placeholder="ม.1">
+                </div>
+                <div>
+                    <label>ห้อง</label>
+                    <input type="text" id="sectionRoom" placeholder="1">
+                </div>
+                <div>
+                    <label>วันเรียน</label>
+                    <input type="text" id="sectionDay" placeholder="เช่น จันทร์">
+                </div>
+                <div>
+                    <label>เวลาเรียน</label>
+                    <input type="text" id="sectionTime" placeholder="08:30-10:00">
+                </div>
+                <div>
+                    <label>ห้องเรียน</label>
+                    <input type="text" id="sectionClassroom" placeholder="A101">
+                </div>
+            </div>
+            <div class="director-actions" style="margin-top:14px;">
+                <button class="btn-primary" id="saveSectionBtn">บันทึก</button>
+                <button class="btn-outline" id="resetSectionBtn">ล้างค่า</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../../js/app.js"></script>
+    <script type="module" src="../../js/director_curriculum.js"></script>
+</body>
+</html>
+
