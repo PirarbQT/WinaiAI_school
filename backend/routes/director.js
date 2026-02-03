@@ -115,12 +115,28 @@ router.post("/students", async (req, res) => {
 router.put("/students/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const { first_name, last_name, class_level, classroom, room } = req.body;
+        const { student_code, first_name, last_name, class_level, classroom, room, password } = req.body;
 
-        await pool.query(
-            `UPDATE students SET first_name=$1, last_name=$2, class_level=$3, classroom=$4, room=$5 WHERE id=$6`,
-            [first_name, last_name, class_level, classroom, room, id]
-        );
+        let passwordHash = null;
+        if (password) {
+            passwordHash = await bcrypt.hash(password, 10);
+        }
+
+        if (passwordHash) {
+            await pool.query(
+                `UPDATE students 
+                 SET student_code=$1, first_name=$2, last_name=$3, class_level=$4, classroom=$5, room=$6, password_hash=$7 
+                 WHERE id=$8`,
+                [student_code, first_name, last_name, class_level, classroom, room, passwordHash, id]
+            );
+        } else {
+            await pool.query(
+                `UPDATE students 
+                 SET student_code=$1, first_name=$2, last_name=$3, class_level=$4, classroom=$5, room=$6 
+                 WHERE id=$7`,
+                [student_code, first_name, last_name, class_level, classroom, room, id]
+            );
+        }
         res.json({ success: true });
     } catch (err) {
         console.error("ERROR /director/students PUT:", err);
