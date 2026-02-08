@@ -1,7 +1,23 @@
-import { requireDirectorLogin, qs, setState, clearFieldErrors, setFieldError, openModal, closeModal } from "./app.js";
-import { API_BASE, FILE_BASE } from "./config.js";
+﻿import { requireDirectorLogin, qs, setState, clearFieldErrors, setFieldError, openModal, closeModal } from "./app.js";
+import { API_BASE } from "./config.js";
 
 let currentList = [];
+
+async function uploadProfilePhoto(role, id, file) {
+    const formData = new FormData();
+    formData.append("photo", file);
+    formData.append("role", role);
+    formData.append("id", String(id));
+    const res = await fetch(`${API_BASE}/upload/profile`, {
+        method: "POST",
+        body: formData
+    });
+    if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "อัปโหลดรูปไม่สำเร็จ");
+    }
+    return res.json();
+}
 
 window.onload = async () => {
     requireDirectorLogin();
@@ -25,12 +41,11 @@ async function loadStudents() {
     if (level) params.set("class_level", level);
     if (room) params.set("room", room);
 
-    setState(qs("#studentsBody"), "loading", "???????????????...");
+    setState(qs("#studentsBody"), "loading", "กำลังโหลด...");
     const res = await fetch(`${API_BASE}/director/students?${params.toString()}`);
     currentList = await res.json();
     renderStudents();
 }
-
 
 function renderStudents() {
     const body = qs("#studentsBody");
@@ -59,10 +74,19 @@ window.editStudent = function(id) {
     if (!s) return;
     qs("#studentId").value = s.id;
     qs("#studentCode").value = s.student_code || "";
+    qs("#studentPrefix").value = s.prefix || "";
     qs("#studentFirst").value = s.first_name || "";
     qs("#studentLast").value = s.last_name || "";
+    qs("#studentGender").value = s.gender || "";
+    qs("#studentBirthday").value = s.birthday ? String(s.birthday).slice(0, 10) : "";
+    qs("#studentPhone").value = s.phone || "";
     qs("#studentLevel").value = s.class_level || "";
     qs("#studentRoom").value = s.classroom || s.room || "";
+    qs("#studentStatus").value = s.status || "กำลังศึกษา";
+    qs("#parentName").value = s.parent_name || "";
+    qs("#parentPhone").value = s.parent_phone || "";
+    qs("#studentAddress").value = s.address || "";
+    qs("#studentPhoto").value = s.photo_url || "";
     openModal("studentModal");
 };
 
@@ -75,13 +99,23 @@ window.deleteStudent = async function(id) {
 async function saveStudent() {
     clearFieldErrors(document.body);
     const id = qs("#studentId").value;
+    const photoFile = qs("#studentPhotoFile")?.files?.[0];
     const payload = {
         student_code: qs("#studentCode").value.trim(),
+        prefix: qs("#studentPrefix").value.trim(),
         first_name: qs("#studentFirst").value.trim(),
         last_name: qs("#studentLast").value.trim(),
+        gender: qs("#studentGender").value.trim(),
+        birthday: qs("#studentBirthday").value || null,
+        phone: qs("#studentPhone").value.trim(),
         class_level: qs("#studentLevel").value.trim(),
         classroom: qs("#studentRoom").value.trim(),
         room: qs("#studentRoom").value.trim(),
+        status: qs("#studentStatus").value.trim(),
+        parent_name: qs("#parentName").value.trim(),
+        parent_phone: qs("#parentPhone").value.trim(),
+        address: qs("#studentAddress").value.trim(),
+        photo_url: qs("#studentPhoto").value.trim(),
         password: qs("#studentPass").value.trim()
     };
 
@@ -90,6 +124,7 @@ async function saveStudent() {
         return;
     }
 
+    let savedId = id;
     if (id) {
         await fetch(`${API_BASE}/director/students/${id}`, {
             method: "PUT",
@@ -97,11 +132,22 @@ async function saveStudent() {
             body: JSON.stringify(payload)
         });
     } else {
-        await fetch(`${API_BASE}/director/students`, {
+        const res = await fetch(`${API_BASE}/director/students`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
+        const data = await res.json();
+        savedId = data.id;
+    }
+
+    if (photoFile && savedId) {
+        try {
+            const uploaded = await uploadProfilePhoto("student", savedId, photoFile);
+            qs("#studentPhoto").value = uploaded.url || "";
+        } catch (err) {
+            alert(err.message);
+        }
     }
     resetForm();
     loadStudents();
@@ -111,9 +157,19 @@ async function saveStudent() {
 function resetForm() {
     qs("#studentId").value = "";
     qs("#studentCode").value = "";
+    qs("#studentPrefix").value = "";
     qs("#studentFirst").value = "";
     qs("#studentLast").value = "";
+    qs("#studentGender").value = "";
+    qs("#studentBirthday").value = "";
+    qs("#studentPhone").value = "";
     qs("#studentLevel").value = "";
     qs("#studentRoom").value = "";
+    qs("#studentStatus").value = "กำลังศึกษา";
+    qs("#parentName").value = "";
+    qs("#parentPhone").value = "";
+    qs("#studentAddress").value = "";
+    qs("#studentPhoto").value = "";
+    if (qs("#studentPhotoFile")) qs("#studentPhotoFile").value = "";
     qs("#studentPass").value = "";
 }

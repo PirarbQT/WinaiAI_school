@@ -1,5 +1,5 @@
-import { API_BASE, FILE_BASE } from "./config.js";
-﻿import { requireDirectorLogin, qs, setState } from "./app.js";
+﻿import { API_BASE } from "./config.js";
+import { requireDirectorLogin, qs, setState } from "./app.js";
 
 let countChart = null;
 
@@ -109,4 +109,3 @@ async function loadActivities() {
         setState(list, "empty", "โหลดกิจกรรมไม่สำเร็จ");
     }
 }
-

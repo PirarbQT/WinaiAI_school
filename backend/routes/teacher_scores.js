@@ -16,7 +16,9 @@ router.get("/subjects", async (req, res) => {
                     s.subject_code,
                     s.name AS subject_name,
                     ss.class_level,
-                    ss.classroom AS room
+                    ss.classroom AS room,
+                    ss.year,
+                    ss.semester
              FROM subject_sections ss
              JOIN subjects s ON ss.subject_id = s.id
              WHERE ss.teacher_id = $1`,

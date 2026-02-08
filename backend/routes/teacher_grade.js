@@ -3,6 +3,100 @@ import pool from "../db/pool.js";
 
 const router = express.Router();
 
+const DEFAULT_THRESHOLDS = {
+    a: 80,
+    b_plus: 75,
+    b: 70,
+    c_plus: 65,
+    c: 60,
+    d_plus: 55,
+    d: 50,
+    f: 30
+};
+
+/* ---------------------------------------------------
+   0) โหลดเกณฑ์คะแนนตัดเกรด
+--------------------------------------------------- */
+router.get("/thresholds", async (req, res) => {
+    try {
+        const { section_id } = req.query;
+        if (!section_id) {
+            return res.status(400).json({ error: "section_id required" });
+        }
+
+        const result = await pool.query(
+            `SELECT a, b_plus, b, c_plus, c, d_plus, d, f
+             FROM grade_thresholds
+             WHERE section_id = $1`,
+            [section_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.json(DEFAULT_THRESHOLDS);
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error("ERROR /thresholds:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+/* ---------------------------------------------------
+   0.1) บันทึกเกณฑ์คะแนนตัดเกรด
+--------------------------------------------------- */
+router.put("/thresholds", async (req, res) => {
+    try {
+        const { section_id, thresholds } = req.body;
+        if (!section_id || !thresholds) {
+            return res.status(400).json({ error: "section_id and thresholds required" });
+        }
+
+        const values = {
+            a: Number(thresholds.a),
+            b_plus: Number(thresholds.b_plus),
+            b: Number(thresholds.b),
+            c_plus: Number(thresholds.c_plus),
+            c: Number(thresholds.c),
+            d_plus: Number(thresholds.d_plus),
+            d: Number(thresholds.d),
+            f: Number(thresholds.f)
+        };
+
+        await pool.query(
+            `INSERT INTO grade_thresholds
+                (section_id, a, b_plus, b, c_plus, c, d_plus, d, f)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+             ON CONFLICT (section_id)
+             DO UPDATE SET
+                a = EXCLUDED.a,
+                b_plus = EXCLUDED.b_plus,
+                b = EXCLUDED.b,
+                c_plus = EXCLUDED.c_plus,
+                c = EXCLUDED.c,
+                d_plus = EXCLUDED.d_plus,
+                d = EXCLUDED.d,
+                f = EXCLUDED.f`,
+            [
+                section_id,
+                values.a,
+                values.b_plus,
+                values.b,
+                values.c_plus,
+                values.c,
+                values.d_plus,
+                values.d,
+                values.f
+            ]
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error("ERROR /thresholds:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 /* ---------------------------------------------------
    1) ดึงหัวข้อคะแนนทั้งหมดของ section
 --------------------------------------------------- */
@@ -33,10 +127,16 @@ router.get("/scores", async (req, res) => {
         const { section_id } = req.query;
 
         const students = await pool.query(
-            `SELECT st.id AS student_id, st.student_code,
-                    st.first_name, st.last_name
+            `SELECT st.id AS student_id,
+                    st.student_code,
+                    st.first_name,
+                    st.last_name,
+                    g.total_score AS saved_total_score,
+                    g.grade AS saved_grade
              FROM registrations r
              JOIN students st ON r.student_id = st.id
+             LEFT JOIN grades g
+                ON g.student_id = st.id AND g.section_id = $1
              WHERE r.section_id = $1
              ORDER BY st.student_code ASC`,
             [section_id]
@@ -85,6 +185,8 @@ router.get("/scores", async (req, res) => {
                 student_code: stu.student_code,
                 name: stu.first_name + " " + stu.last_name,
                 total_score: total,
+                saved_total_score: stu.saved_total_score,
+                saved_grade: stu.saved_grade,
                 details: detail,
             };
         });

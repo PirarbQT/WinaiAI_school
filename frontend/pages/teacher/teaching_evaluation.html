@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ผลประเมินการสอน - ครู</title>
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="teacher"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ครู</span>
+            </div>
+        </div>
+        <ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
+            <li><a href="attendance.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
+            <li><a href="scores.html" class="menu-item"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
+            <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="teaching_evaluation.html" class="menu-item active"><i class="fa-solid fa-chart-line"></i> ผลประเมินการสอน</a></li>
+            <li><a href="advisor_evaluation.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ประเมินนักเรียน</a></li>
+            <li><a href="fitness.html" class="menu-item"><i class="fa-solid fa-dumbbell"></i> ทดสอบสมรรถนะ</a></li>
+            <li><a href="calendar.html" class="menu-item"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+            <li><a href="exam_calendar.html" class="menu-item"><i class="fa-solid fa-clipboard-list"></i> ตารางสอบ</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logoutTeacher()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper teacher-page">
+        <section class="teacher-hero">
+            <div>
+                <div class="teacher-kicker">Teaching Insight</div>
+                <h1 class="teacher-title">ผลประเมินการสอน</h1>
+                <p class="teacher-subtitle">สรุปผลประเมินจากนักเรียนและข้อเสนอแนะล่าสุด</p>
+            </div>
+            <div class="teacher-hero-cards">
+                <div class="teacher-hero-card">
+                    <div class="teacher-hero-label">สถานะ</div>
+                    <div class="teacher-hero-value" id="teachingEvalStatus">พร้อมดูผล</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="teacher-section">
+            <div class="teacher-section-head">
+                <h3><i class="fa-solid fa-filter"></i> เลือกปี/ภาคเรียนและรายวิชา</h3>
+                <span class="teacher-pill">เลือกข้อมูลเพื่อดูสรุป</span>
+            </div>
+            <div class="teacher-filter-grid">
+                <div>
+                    <label>ปีการศึกษา</label>
+                    <select id="teachEvalYear" class="custom-select">
+                        <option value="2568" selected>2568</option>
+                        <option value="2567">2567</option>
+                        <option value="2566">2566</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ภาคเรียน</label>
+                    <select id="teachEvalSemester" class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div>
+                    <label>รายวิชาที่สอน</label>
+                    <select id="teachEvalSection" class="custom-select">
+                        <option value="">กำลังโหลด...</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="teacher-section">
+            <div class="teacher-section-head">
+                <h3><i class="fa-solid fa-list-check"></i> สรุปคะแนนประเมิน</h3>
+                <span class="teacher-pill">คะแนนเฉลี่ยต่อหัวข้อ</span>
+            </div>
+            <div class="table-container">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>หัวข้อประเมิน</th>
+                            <th class="center">คะแนนเฉลี่ย</th>
+                            <th class="center">จำนวนผู้ประเมิน</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teachEvalSummary">
+                        <tr>
+                            <td colspan="3" class="center">ยังไม่มีข้อมูล</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="teacher-section">
+            <div class="teacher-section-head">
+                <h3><i class="fa-solid fa-comment-dots"></i> ข้อเสนอแนะล่าสุด</h3>
+                <span class="teacher-pill">ความคิดเห็นจากนักเรียน</span>
+            </div>
+            <div id="teachEvalFeedback" class="feedback-list"></div>
+        </section>
+    </main>
+
+    <script type="module" src="../../js/app.js"></script>
+    <script type="module" src="../../js/teacher_teaching_evaluation.js"></script>
+</body>
+</html>

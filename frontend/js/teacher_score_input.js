@@ -1,5 +1,5 @@
 import { requireTeacherLogin, qs, setState } from "./app.js";
-import { API_BASE, FILE_BASE } from "./config.js";
+import { API_BASE } from "./config.js";
 
 let teacher = null;
 let headerId = null;
@@ -7,19 +7,19 @@ let sectionId = null;
 let maxScore = 0;
 
 const demoScoreHeaders = [
-    { id: 1001, title: "?????? 1", max_score: 10 },
-    { id: 1002, title: "????????????", max_score: 20 },
-    { id: 1003, title: "???????", max_score: 30 },
-    { id: 1004, title: "???????", max_score: 40 }
+    { id: 1001, title: "งานที่ 1", max_score: 10 },
+    { id: 1002, title: "แบบทดสอบย่อย", max_score: 20 },
+    { id: 1003, title: "กลางภาค", max_score: 30 },
+    { id: 1004, title: "ปลายภาค", max_score: 40 }
 ];
 
 const demoScoreStudents = [
-    { student_id: 101, student_code: "6501001", first_name: "???", last_name: "?????" },
-    { student_id: 102, student_code: "6501002", first_name: "?????", last_name: "????" },
-    { student_id: 103, student_code: "6501003", first_name: "????", last_name: "??????" },
-    { student_id: 104, student_code: "6501004", first_name: "???", last_name: "????" },
-    { student_id: 105, student_code: "6501005", first_name: "???", last_name: "?????????" },
-    { student_id: 106, student_code: "6501006", first_name: "?????", last_name: "?????" }
+    { student_id: 101, student_code: "6501001", first_name: "เมษ", last_name: "ทองดี" },
+    { student_id: 102, student_code: "6501002", first_name: "น้ำฝน", last_name: "สดใส" },
+    { student_id: 103, student_code: "6501003", first_name: "พีระ", last_name: "ศรีสุข" },
+    { student_id: 104, student_code: "6501004", first_name: "ณัฐ", last_name: "ใจดี" },
+    { student_id: 105, student_code: "6501005", first_name: "ธนา", last_name: "รุ่งโรจน์" },
+    { student_id: 106, student_code: "6501006", first_name: "กานต์", last_name: "วิเศษ" }
 ];
 
 window.onload = async () => {
@@ -41,17 +41,12 @@ window.onload = async () => {
     qs("#saveScoreBtn").addEventListener("click", saveScores);
 };
 
-/* ---------------------------------------------------------
-   1) โหลดข้อมูลหัวข้อคะแนน
---------------------------------------------------------- */
 async function loadHeaderInfo() {
-    setState(qs("#headerInfoBox"), "loading", "????????????????????...");
+    setState(qs("#headerInfoBox"), "loading", "กำลังโหลดหัวข้อคะแนน...");
     let headers = [];
 
     try {
-        const res = await fetch(
-            `${API_BASE}/teacher/scores/headers?section_id=${sectionId}`
-        );
+        const res = await fetch(`${API_BASE}/teacher/scores/headers?section_id=${sectionId}`);
         headers = await res.json();
     } catch (err) {
         headers = [];
@@ -68,7 +63,7 @@ async function loadHeaderInfo() {
     }
 
     if (!header) {
-        setState(qs("#headerInfoBox"), "error", "????????????????");
+        setState(qs("#headerInfoBox"), "error", "ไม่พบหัวข้อคะแนน");
         return false;
     }
 
@@ -77,30 +72,22 @@ async function loadHeaderInfo() {
     qs("#headerInfoBox").innerHTML = `
         <div class="score-header-detail">
             <h2>${header.title}</h2>
-            <p>?????????: <strong>${header.max_score}</strong></p>
+            <p>คะแนนเต็ม: <strong>${header.max_score}</strong></p>
         </div>
     `;
     return true;
 }
 
-
-/* ---------------------------------------------------------
-   2) โหลดรายชื่อนักเรียนใน section + คะแนนเดิม (ถ้ามี)
---------------------------------------------------------- */
 async function loadStudents() {
-    setState(qs("#scoreTableContainer"), "loading", "????????????????????????...");
+    setState(qs("#scoreTableContainer"), "loading", "กำลังโหลดรายชื่อนักเรียน...");
     let students = [];
     let scoreData = [];
 
     try {
-        const res = await fetch(
-            `${API_BASE}/teacher/scores/students?section_id=${sectionId}`
-        );
+        const res = await fetch(`${API_BASE}/teacher/scores/students?section_id=${sectionId}`);
         students = await res.json();
 
-        const scoreRes = await fetch(
-            `${API_BASE}/teacher/scores/scores?header_id=${headerId}`
-        );
+        const scoreRes = await fetch(`${API_BASE}/teacher/scores/scores?header_id=${headerId}`);
         scoreData = await scoreRes.json();
     } catch (err) {
         students = [];
@@ -116,9 +103,9 @@ async function loadStudents() {
     let html = `
         <table class="table-score-input">
             <tr>
-                <th>????????????</th>
-                <th>???? - ???????</th>
-                <th style="width:120px;">?????</th>
+                <th>รหัสนักเรียน</th>
+                <th>ชื่อ - นามสกุล</th>
+                <th style="width:120px;">คะแนน</th>
             </tr>
     `;
 
@@ -147,10 +134,6 @@ async function loadStudents() {
     box.innerHTML = html;
 }
 
-
-/* ---------------------------------------------------------
-   3) เซฟคะแนนทั้งหมด
---------------------------------------------------------- */
 async function saveScores() {
     const inputs = document.querySelectorAll(".score-input");
     inputs.forEach((i) => i.classList.remove("is-invalid"));
@@ -170,7 +153,7 @@ async function saveScores() {
     });
 
     if (hasInvalid) {
-        alert(`กรุณากรอกคะแนนระหว่าง 0 - ${maxScore}`);
+        alert(`กรุณากรอกคะแนนระหว่าง 0 - {max}`.replace("<built-in function max>", maxScore));
         return;
     }
 
@@ -196,5 +179,3 @@ async function saveScores() {
         alert("เกิดข้อผิดพลาดในการบันทึกคะแนน");
     }
 }
-
-

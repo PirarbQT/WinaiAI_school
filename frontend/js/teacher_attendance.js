@@ -1,10 +1,12 @@
-import { API_BASE, FILE_BASE } from "./config.js";
-﻿import { requireTeacherLogin, qs, setState, clearFieldErrors, setFieldError } from "./app.js";
+﻿import { API_BASE } from "./config.js";
+import { requireTeacherLogin, qs, setState, clearFieldErrors, setFieldError, openModal, closeModal } from "./app.js";
 
 let teacher;
 let students = [];
 let sections = [];
 let selectedSection = null;
+let evalTopics = [];
+let evalTargetStudent = null;
 
 window.onload = () => {
     teacher = requireTeacherLogin();
@@ -15,6 +17,7 @@ window.onload = () => {
     qs("#subjectSelect").addEventListener("change", applySectionInfo);
     qs("#loadStudentsBtn").addEventListener("click", loadStudents);
     qs("#saveAttendanceBtn").addEventListener("click", saveAttendance);
+    qs("#saveStudentEvalBtn").addEventListener("click", saveStudentEvaluation);
 };
 
 function setTodayDate() {
@@ -108,6 +111,7 @@ function renderStudents() {
                     <th>รหัสนักเรียน</th>
                     <th>ชื่อ - นามสกุล</th>
                     <th>สถานะ</th>
+                    <th>ประเมินนักเรียน</th>
                 </tr>`;
 
     students.forEach(s => {
@@ -123,6 +127,11 @@ function renderStudents() {
                     <option value="leave">ลา</option>
                 </select>
             </td>
+            <td>
+                <button class="btn-outline btn-sm" onclick="openStudentEval(${s.id})">
+                    <i class="fa-solid fa-user-check"></i> ประเมิน
+                </button>
+            </td>
         </tr>
         `;
     });
@@ -131,6 +140,99 @@ function renderStudents() {
     box.innerHTML = html;
 
     qs("#saveAttendanceBtn").style.display = "block";
+}
+
+async function loadEvaluationTopics() {
+    if (evalTopics.length) return evalTopics;
+    const res = await fetch(`${API_BASE}/teacher/evaluation/subject/topics`);
+    const data = await res.json();
+    evalTopics = Array.isArray(data) ? data : [];
+    return evalTopics;
+}
+
+window.openStudentEval = async function(studentId) {
+    if (!selectedSection) {
+        alert("กรุณาเลือกวิชา");
+        return;
+    }
+
+    const student = students.find((s) => String(s.id) === String(studentId));
+    if (!student) return;
+
+    evalTargetStudent = student;
+    qs("#evalStudentName").value = `${student.student_code} - ${student.first_name} ${student.last_name}`;
+    qs("#evalSubjectName").value = `${selectedSection.subject_code} - ${selectedSection.subject_name}`;
+
+    const topics = await loadEvaluationTopics();
+    const year = selectedSection.year;
+    const semester = selectedSection.semester;
+
+    const resp = await fetch(
+        `${API_BASE}/teacher/evaluation/subject/student?section_id=${selectedSection.section_id}&student_id=${student.id}&year=${year}&semester=${semester}`
+    );
+    const existing = await resp.json();
+
+    const map = new Map();
+    if (Array.isArray(existing)) {
+        existing.forEach((r) => map.set(r.topic, r.score));
+    }
+
+    const wrap = qs("#studentEvalTopics");
+    wrap.innerHTML = "";
+
+    topics.forEach((topic, idx) => {
+        const score = map.get(topic) ?? "";
+        const row = document.createElement("div");
+        row.style.display = "grid";
+        row.style.gridTemplateColumns = "1fr 120px";
+        row.style.gap = "10px";
+        row.style.alignItems = "center";
+        row.style.marginBottom = "10px";
+        row.innerHTML = `
+            <div>${idx + 1}. ${topic}</div>
+            <select class="evalScoreSelect" data-topic="${topic}">
+                <option value="">-</option>
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1</option>
+            </select>
+        `;
+        wrap.appendChild(row);
+        const select = row.querySelector("select");
+        if (select && score !== null && score !== undefined && score !== "") {
+            select.value = String(score);
+        }
+    });
+
+    openModal("studentEvalModal");
+};
+
+async function saveStudentEvaluation() {
+    if (!selectedSection || !evalTargetStudent) return;
+
+    const year = selectedSection.year;
+    const semester = selectedSection.semester;
+    const items = [...document.querySelectorAll(".evalScoreSelect")].map((el) => ({
+        topic: el.dataset.topic,
+        score: el.value ? Number(el.value) : null
+    }));
+
+    await fetch(`${API_BASE}/teacher/evaluation/subject/student`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            teacher_id: teacher.id,
+            section_id: selectedSection.section_id,
+            student_id: evalTargetStudent.id,
+            year,
+            semester,
+            items
+        })
+    });
+
+    closeModal("studentEvalModal");
 }
 
 async function saveAttendance() {

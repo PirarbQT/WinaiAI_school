@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โครงการ - ผู้อำนวยการ</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="director"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ผู้อำนวยการ</span>
+            </div>
+        </div>
+        <ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> จัดการนักเรียน</a></li>
+            <li><a href="teachers.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> จัดการครู</a></li>
+            <li><a href="advisors.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ครูที่ปรึกษา</a></li>
+            <li><a href="subjects.html" class="menu-item"><i class="fa-solid fa-book"></i> จัดการรายวิชา</a></li>
+            <li><a href="curriculum.html" class="menu-item"><i class="fa-solid fa-layer-group"></i> จัดการหลักสูตร</a></li>
+            <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> กิจกรรม</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ประเมินการสอน</a></li>
+            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> งบประมาณ</a></li>
+            <li><a href="student_count.html" class="menu-item"><i class="fa-solid fa-chart-column"></i> สถิตินักเรียน</a></li>
+            <li><a href="projects.html" class="menu-item"><i class="fa-solid fa-diagram-project"></i> โครงการ</a></li>
+        </ul>
+        <div class="logout-btn" onclick="logoutDirector()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper director-page project-page">
+        <section class="project-hero">
+            <div class="project-hero-head">
+                <div>
+                    <div class="director-kicker">Activity Monitoring</div>
+                    <h1 class="director-title">โครงการและตัวชี้วัด</h1>
+                    <p class="director-subtitle">ติดตามผลและสรุปโครงการแบบภาพรวม พร้อมข้อมูลเชิงวิเคราะห์</p>
+                </div>
+                <div class="project-actions">
+                    <button class="btn-primary" id="openProjectModalBtn"><i class="fa-solid fa-plus"></i> สร้างโครงการใหม่</button>
+                </div>
+            </div>
+
+            <div class="project-filters">
+                <div class="project-filter">
+                    <label>ปีการศึกษา</label>
+                    <select id="projectYearSelect" class="custom-select">
+                        <option value="2568" selected>2568</option>
+                        <option value="2567">2567</option>
+                        <option value="2566">2566</option>
+                    </select>
+                </div>
+                <div class="project-filter">
+                    <label>ภาคเรียน</label>
+                    <select id="projectSemesterSelect" class="custom-select">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div class="project-filter wide">
+                    <label>เลือกโครงการ</label>
+                    <select id="projectSelect" class="custom-select"></select>
+                </div>
+            </div>
+        </section>
+
+        <section class="project-grid">
+            <div class="project-card">
+                <div class="project-card-title">สถานะกิจกรรม</div>
+                <div class="project-kpi" id="projectKpiScore">0</div>
+                <div class="project-kpi-sub">TOTAL SCORE KPI</div>
+                <div class="project-kpi-status" id="projectStatus">กำลังประเมิน</div>
+            </div>
+
+            <div class="project-card chart">
+                <div class="project-card-title">วิเคราะห์ผลลัพธ์</div>
+                <canvas id="projectChart" height="200"></canvas>
+            </div>
+        </section>
+
+        <section class="project-metrics">
+            <div class="project-metric">
+                <div class="metric-head">ปริมาณ (Quantity)</div>
+                <div class="metric-value"><span id="qtyActual">0</span> / <span id="qtyTarget">0</span></div>
+                <div class="metric-bar"><span id="qtyBar"></span></div>
+            </div>
+            <div class="project-metric">
+                <div class="metric-head">งบประมาณ (Budget)</div>
+                <div class="metric-value">ใช้ไป <span id="budgetUsed">0</span> / <span id="budgetTotal">0</span> บาท</div>
+                <div class="metric-bar"><span id="budgetBar"></span></div>
+            </div>
+            <div class="project-metric">
+                <div class="metric-head">ความพึงพอใจ (Quality)</div>
+                <div class="metric-value"><span id="qualityScore">0</span> / 100</div>
+                <div class="metric-bar"><span id="qualityBar"></span></div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal" id="projectModal">
+        <div class="modal-backdrop" data-modal-close="projectModal"></div>
+        <div class="modal-content modal-content-wide">
+            <div class="modal-header">
+                <h3>สร้างโครงการใหม่</h3>
+                <button class="modal-close" data-modal-close="projectModal">×</button>
+            </div>
+            <div class="student-form-section">
+                <div class="student-form-grid">
+                    <div class="student-form-field">
+                        <label>ชื่อโครงการ</label>
+                        <input type="text" id="projectName" placeholder="ระบุชื่อโครงการ">
+                    </div>
+                    <div class="student-form-field">
+                        <label>ปีงบประมาณ</label>
+                        <select id="projectYear" class="custom-select">
+                            <option value="2569">2569</option>
+                            <option value="2568" selected>2568</option>
+                            <option value="2567">2567</option>
+                        </select>
+                    </div>
+                    <div class="student-form-field">
+                        <label>ภาคเรียน</label>
+                        <select id="projectSemester" class="custom-select">
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                    <div class="student-form-field wide">
+                        <label>วัตถุประสงค์</label>
+                        <textarea id="projectObjective" rows="3" placeholder="ระบุวัตถุประสงค์"></textarea>
+                    </div>
+                    <div class="student-form-field">
+                        <label>ฝ่ายงาน</label>
+                        <input type="text" id="projectDepartment" placeholder="เช่น งานกิจการนักเรียน">
+                    </div>
+                    <div class="student-form-field">
+                        <label>งบประมาณโครงการ (บาท)</label>
+                        <input type="number" id="projectBudget" min="0" placeholder="0.00">
+                    </div>
+                    <div class="student-form-field">
+                        <label>เป้าหมายปริมาณ</label>
+                        <input type="number" id="projectQtyTarget" min="0" placeholder="0">
+                    </div>
+                    <div class="student-form-field">
+                        <label>ผลจริงปริมาณ</label>
+                        <input type="number" id="projectQtyActual" min="0" placeholder="0">
+                    </div>
+                    <div class="student-form-field">
+                        <label>ใช้จ่ายแล้ว (บาท)</label>
+                        <input type="number" id="projectBudgetUsed" min="0" placeholder="0.00">
+                    </div>
+                    <div class="student-form-field">
+                        <label>คะแนนคุณภาพ (0-100)</label>
+                        <input type="number" id="projectQuality" min="0" max="100" placeholder="0">
+                    </div>
+                    <div class="student-form-field">
+                        <label>KPI รวม (0-100)</label>
+                        <input type="number" id="projectKpi" min="0" max="100" placeholder="0">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-outline" data-modal-close="projectModal">ยกเลิก</button>
+                    <button class="btn-primary" id="saveProjectBtn">บันทึกโครงการ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../../js/app.js"></script>
+    <script type="module" src="../../js/director_projects.js"></script>
+</body>
+</html>

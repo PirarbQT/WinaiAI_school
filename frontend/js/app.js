@@ -48,7 +48,8 @@ export function requireLogin() {
 
 async function api(path, options = {}) {
     const res = await fetch(API_BASE + path, {
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Cache-Control": "no-cache" },
+        cache: "no-store",
         ...options
     });
     return await res.json();
@@ -75,6 +76,17 @@ export async function loadCart(student_id, year, semester) {
     return await api(`/registration/cart?student_id=${student_id}&year=${year}&semester=${semester}`);
 }
 
+export async function loadRegistered(student_id, year, semester) {
+    return await api(`/registration/registered?student_id=${student_id}&year=${year}&semester=${semester}`);
+}
+
+export async function confirmRegistration(student_id, year, semester) {
+    return await api(`/registration/confirm`, {
+        method: "POST",
+        body: JSON.stringify({ student_id, year, semester })
+    });
+}
+
 export async function removeCartItem(id) {
     return await api(`/registration/remove/${id}`, { method: "DELETE" });
 }
@@ -87,6 +99,15 @@ export async function loadClassSchedule(student_id, year, semester) {
 
 export async function loadExamSchedule(student_id, year, semester) {
     return await api(`/schedule/exam?student_id=${student_id}&year=${year}&semester=${semester}`);
+}
+
+export async function loadAdvisor(student_id, year = null, semester = null) {
+    const params = new URLSearchParams({ student_id });
+    if (year && semester) {
+        params.append("year", year);
+        params.append("semester", semester);
+    }
+    return await api(`/student/advisor?${params.toString()}`);
 }
 
 /* ---------- 5. GRADES ---------- */
@@ -134,10 +155,25 @@ export async function getCompetency(student_id, year, semester) {
     return await api(`/evaluation/competency?student_id=${student_id}&year=${year}&semester=${semester}`);
 }
 
-export async function submitEvaluation(student_id, data, year, semester) {
+export async function getAdvisorEvaluation(student_id, year, semester) {
+    return await api(`/student/advisor_evaluation?student_id=${student_id}&year=${year}&semester=${semester}`);
+}
+
+export async function getSubjectEvaluation(student_id, section_id, year, semester, subject_id = null) {
+    const params = new URLSearchParams({
+        student_id,
+        section_id,
+        year,
+        semester
+    });
+    if (subject_id) params.append("subject_id", subject_id);
+    return await api(`/student/subject_evaluation?${params.toString()}`);
+}
+
+export async function submitEvaluation(student_id, data, year, semester, section_id = null, feedback = "") {
     return await api(`/evaluation/submit`, {
         method: "POST",
-        body: JSON.stringify({ student_id, data, year, semester })
+        body: JSON.stringify({ student_id, data, year, semester, section_id, feedback })
     });
 }
 

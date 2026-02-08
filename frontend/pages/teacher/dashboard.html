@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 
 <head>
@@ -20,13 +20,17 @@
                 <span>ครู</span>
             </div>
         </div>
-<ul class="menu-list">
+        <ul class="menu-list">
             <li><a href="dashboard.html" class="menu-item active"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
             <li><a href="students.html" class="menu-item"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
             <li><a href="attendance.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
             <li><a href="scores.html" class="menu-item"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
             <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="teaching_evaluation.html" class="menu-item"><i class="fa-solid fa-chart-line"></i> ผลประเมินการสอน</a></li>
+            <li><a href="advisor_evaluation.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ประเมินนักเรียน</a></li>
+            <li><a href="fitness.html" class="menu-item"><i class="fa-solid fa-dumbbell"></i> ทดสอบสมรรถนะ</a></li>
             <li><a href="calendar.html" class="menu-item"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+            <li><a href="exam_calendar.html" class="menu-item"><i class="fa-solid fa-clipboard-list"></i> ตารางสอบ</a></li>
         </ul>
 
         <div class="logout-btn" onclick="logoutTeacher()">
@@ -45,10 +49,10 @@
                 <div class="hero-meta">
                     <span class="chip"><i class="fa-regular fa-calendar"></i> <span id="todayDate">-</span></span>
                     <span class="chip"><i class="fa-regular fa-clock"></i> <span id="todayTime">-</span></span>
-                    <span class="chip chip-soft"><i class="fa-solid fa-bolt"></i> พร้อมใช้งาน</span>
+                    <span class="chip chip-soft"><i class="fa-solid fa-bolt"></i> พร้อมทำงาน</span>
                 </div>
                 <div class="hero-actions">
-                    <a href="attendance.html" class="btn-hero">เช็คชื่อวันนี้</a>
+                    <a href="attendance.html" class="btn-hero">เช็คชื่อนักเรียน</a>
                     <a href="scores.html" class="btn-hero ghost">กรอกคะแนน</a>
                 </div>
             </div>
@@ -56,7 +60,7 @@
                 <div class="hero-card">
                     <div class="hero-card-title">ภาพรวมวันนี้</div>
                     <div class="hero-card-row">
-                        <span>เช็คชื่อ</span>
+                        <span>เช็คชื่อวันนี้</span>
                         <strong id="countTodayAttendance">—</strong>
                     </div>
                     <div class="hero-card-row">
@@ -64,7 +68,7 @@
                         <strong id="countUpcomingEvents">0</strong>
                     </div>
                     <div class="hero-card-row">
-                        <span>งานด่วน</span>
+                        <span>งานค้าง</span>
                         <strong>2</strong>
                     </div>
                 </div>
@@ -72,75 +76,83 @@
         </section>
 
         <section class="stat-grid">
-            <div class="stat-tile accent-blue">
-                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
-                <div class="stat-body">
-                    <div class="stat-label">จำนวนนักเรียน</div>
-                    <div class="stat-value" id="countStudents">0</div>
+            <a class="stat-tile-link" href="students.html">
+                <div class="stat-tile accent-blue">
+                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">จำนวนนักเรียน</div>
+                        <div class="stat-value" id="countStudents">0</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-tile accent-green">
-                <div class="stat-icon"><i class="fa-solid fa-book"></i></div>
-                <div class="stat-body">
-                    <div class="stat-label">วิชาที่สอน</div>
-                    <div class="stat-value" id="countSubjects">0</div>
+            </a>
+            <a class="stat-tile-link" href="scores.html">
+                <div class="stat-tile accent-green">
+                    <div class="stat-icon"><i class="fa-solid fa-book"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">รายวิชาที่สอน</div>
+                        <div class="stat-value" id="countSubjects">0</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-tile accent-gold">
-                <div class="stat-icon"><i class="fa-solid fa-pen-nib"></i></div>
-                <div class="stat-body">
-                    <div class="stat-label">หัวข้อคะแนน</div>
-                    <div class="stat-value" id="countScoreItems">—</div>
+            </a>
+            <a class="stat-tile-link" href="scores.html">
+                <div class="stat-tile accent-gold">
+                    <div class="stat-icon"><i class="fa-solid fa-pen-nib"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">หัวข้อคะแนน</div>
+                        <div class="stat-value" id="countScoreItems">—</div>
+                    </div>
                 </div>
-            </div>
-            <div class="stat-tile accent-brown">
-                <div class="stat-icon"><i class="fa-solid fa-calendar-days"></i></div>
-                <div class="stat-body">
-                    <div class="stat-label">กิจกรรมทั้งหมด</div>
-                    <div class="stat-value" id="countAllEvents">—</div>
+            </a>
+            <a class="stat-tile-link" href="calendar.html">
+                <div class="stat-tile accent-brown">
+                    <div class="stat-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                    <div class="stat-body">
+                        <div class="stat-label">กิจกรรมทั้งหมด</div>
+                        <div class="stat-value" id="countAllEvents">—</div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </section>
 
         <section class="panel-grid">
             <div class="panel">
                 <div class="panel-header">
-                    <h3>กิจกรรมใกล้ถึง</h3>
+                    <h3>กิจกรรมล่าสุด</h3>
                     <a href="calendar.html" class="panel-link">ดูทั้งหมด</a>
                 </div>
                 <div id="dashboardEventList" class="event-mini-list"></div>
             </div>
             <div class="panel">
                 <div class="panel-header">
-                    <h3>งานที่ควรทำต่อ</h3>
-                    <span class="panel-tag">แนะนำ</span>
+                    <h3>งานที่ต้องทำ</h3>
+                    <span class="panel-tag">วันนี้</span>
                 </div>
                 <div class="task-list">
-                    <div class="task-item"><span class="task-dot"></span>ตรวจคะแนนกลางภาคของ ม.1/1</div>
-                    <div class="task-item"><span class="task-dot"></span>เพิ่มหัวข้อคะแนนรายวิชาใหม่</div>
-                    <div class="task-item"><span class="task-dot"></span>อัปเดตปฏิทินเดือนนี้</div>
+                    <div class="task-item"><span class="task-dot"></span>เช็คชื่อห้อง ม.1/1</div>
+                    <div class="task-item"><span class="task-dot"></span>บันทึกคะแนนกลางภาค</div>
+                    <div class="task-item"><span class="task-dot"></span>เตรียมสื่อการสอน</div>
                 </div>
             </div>
             <div class="panel wide">
                 <div class="panel-header">
-                    <h3>สรุปความคืบหน้า</h3>
+                    <h3>ความคืบหน้าการสอน</h3>
                     <span class="panel-tag soft">สัปดาห์นี้</span>
                 </div>
                 <div class="progress-grid">
                     <div class="progress-card">
                         <div class="progress-title">เช็คชื่อ</div>
                         <div class="progress-bar"><span style="width:68%"></span></div>
-                        <div class="progress-meta">สำเร็จ 68%</div>
+                        <div class="progress-meta">คืบหน้า 68%</div>
                     </div>
                     <div class="progress-card">
-                        <div class="progress-title">กรอกคะแนน</div>
+                        <div class="progress-title">เก็บงาน</div>
                         <div class="progress-bar"><span style="width:42%"></span></div>
-                        <div class="progress-meta">สำเร็จ 42%</div>
+                        <div class="progress-meta">คืบหน้า 42%</div>
                     </div>
                     <div class="progress-card">
-                        <div class="progress-title">ตัดเกรด</div>
+                        <div class="progress-title">บันทึกคะแนน</div>
                         <div class="progress-bar"><span style="width:20%"></span></div>
-                        <div class="progress-meta">สำเร็จ 20%</div>
+                        <div class="progress-meta">คืบหน้า 20%</div>
                     </div>
                 </div>
             </div>
@@ -151,5 +163,3 @@
 </body>
 
 </html>
-
-

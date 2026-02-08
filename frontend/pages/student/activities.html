@@ -51,33 +51,53 @@
             </div>
         </section>
 
-        <section class="student-section">
-            <div class="student-section-head">
-                <h3><i class="fa-solid fa-bullhorn"></i> กิจกรรมเร็ว ๆ นี้</h3>
-                <span class="student-pill">Upcoming</span>
-            </div>
-            <div id="upcomingActivities" class="student-activity-scroll"></div>
-        </section>
+        <section class="teacher-calendar-layout">
+            <div class="teacher-calendar-main">
+                <div class="teacher-calendar-card">
+                    <div class="teacher-calendar-toolbar">
+                        <div class="toolbar-left">
+                            <button class="btn-outline btn-sm" id="studentCalPrev"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button class="btn-outline btn-sm" id="studentCalToday">วันนี้</button>
+                            <button class="btn-outline btn-sm" id="studentCalNext"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="toolbar-center" id="studentCalMonthLabel">-</div>
+                        <div class="toolbar-right">
+                            <button class="btn-outline btn-sm">เดือน</button>
+                            <button class="btn-outline btn-sm ghost">สัปดาห์</button>
+                        </div>
+                    </div>
 
-        <section class="student-section">
-            <div class="student-section-head">
-                <h3><i class="fa-solid fa-clock-rotate-left"></i> กิจกรรมที่ผ่านมา</h3>
-                <span class="student-pill">History</span>
+                    <div class="teacher-calendar-table-wrap">
+                        <table class="teacher-calendar-table">
+                            <thead>
+                                <tr>
+                                    <th>อา.</th>
+                                    <th>จ.</th>
+                                    <th>อ.</th>
+                                    <th>พ.</th>
+                                    <th>พฤ.</th>
+                                    <th>ศ.</th>
+                                    <th>ส.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentCalendarBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <table class="student-table">
-                <thead>
-                    <tr>
-                        <th>กิจกรรม</th>
-                        <th>วันที่</th>
-                        <th>สถานที่</th>
-                    </tr>
-                </thead>
-                <tbody id="pastActivitiesBody"></tbody>
-            </table>
+
+            <aside class="teacher-calendar-side">
+                <div class="calendar-side-card">
+                    <div class="calendar-side-header">
+                        <h3><i class="fa-solid fa-clock"></i> กิจกรรมที่กำลังจะมาถึง</h3>
+                    </div>
+                    <div id="studentUpcomingList" class="calendar-upcoming"></div>
+                </div>
+            </aside>
         </section>
     </main>
 
-    <script type="module" src="../../js/activities.js"></script>
+    <script type="module" src="../../js/student_calendar.js"></script>
     <script type="module" src="../../js/app.js"></script>
 
     <script type="module">

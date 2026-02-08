@@ -41,8 +41,8 @@ router.post("/add", async (req, res) => {
     const { student_id, section_id, year, semester } = req.body;
 
     const result = await pool.query(
-        `INSERT INTO registrations(student_id, section_id, year, semester)
-         VALUES($1,$2,$3,$4) RETURNING *`,
+        `INSERT INTO registrations(student_id, section_id, year, semester, status)
+         VALUES($1,$2,$3,$4,'cart') RETURNING *`,
         [student_id, section_id, year, semester]
     );
 
@@ -55,15 +55,55 @@ router.get("/cart", async (req, res) => {
 
     const result = await pool.query(
         `SELECT r.*, s.subject_code, s.name AS subject_name, s.credit,
-                ss.time_range, ss.day_of_week
+                ss.time_range, ss.day_of_week,
+                (t.first_name || ' ' || t.last_name) AS teacher_name
          FROM registrations r
          JOIN subject_sections ss ON r.section_id = ss.id
          JOIN subjects s ON ss.subject_id = s.id
-         WHERE r.student_id = $1 AND r.year = $2 AND r.semester = $3`,
+         LEFT JOIN teachers t ON ss.teacher_id = t.id
+         WHERE r.student_id = $1 AND r.year = $2 AND r.semester = $3
+           AND r.status = 'cart'`,
         [student_id, year, semester]
     );
 
     res.json(result.rows);
+});
+
+// แสดงรายวิชาที่บันทึกแล้ว
+router.get("/registered", async (req, res) => {
+    const { student_id, year, semester } = req.query;
+
+    const result = await pool.query(
+        `SELECT r.*, s.subject_code, s.name AS subject_name, s.credit,
+                ss.subject_id,
+                ss.time_range, ss.day_of_week,
+                (t.first_name || ' ' || t.last_name) AS teacher_name
+         FROM registrations r
+         JOIN subject_sections ss ON r.section_id = ss.id
+         JOIN subjects s ON ss.subject_id = s.id
+         LEFT JOIN teachers t ON ss.teacher_id = t.id
+         WHERE r.student_id = $1 AND r.year = $2 AND r.semester = $3
+           AND r.status = 'registered'`,
+        [student_id, year, semester]
+    );
+
+    res.json(result.rows);
+});
+
+// ยืนยันบันทึกรายวิชาในตะกร้า
+router.post("/confirm", async (req, res) => {
+    const { student_id, year, semester } = req.body;
+
+    const result = await pool.query(
+        `UPDATE registrations
+         SET status = 'registered'
+         WHERE student_id = $1 AND year = $2 AND semester = $3
+           AND status = 'cart'
+         RETURNING *`,
+        [student_id, year, semester]
+    );
+
+    res.json({ success: true, updated: result.rowCount });
 });
 
 // ลบจากตะกร้า

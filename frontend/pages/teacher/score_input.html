@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>กรอกคะแนนรายคน</title>
+    <title>กรอกคะแนนรายวิชา</title>
 
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,13 +19,17 @@
                 <span>ครู</span>
             </div>
         </div>
-<ul class="menu-list">
+        <ul class="menu-list">
             <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
             <li><a href="students.html" class="menu-item"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
             <li><a href="attendance.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
             <li><a href="scores.html" class="menu-item active"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
             <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="teaching_evaluation.html" class="menu-item"><i class="fa-solid fa-chart-line"></i> ผลประเมินการสอน</a></li>
+            <li><a href="advisor_evaluation.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ประเมินนักเรียน</a></li>
+            <li><a href="fitness.html" class="menu-item"><i class="fa-solid fa-dumbbell"></i> ทดสอบสมรรถนะ</a></li>
             <li><a href="calendar.html" class="menu-item"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+            <li><a href="exam_calendar.html" class="menu-item"><i class="fa-solid fa-clipboard-list"></i> ตารางสอบ</a></li>
         </ul>
 
         <div class="logout-btn" onclick="logoutTeacher()">
@@ -36,7 +40,7 @@
     <main class="main-wrapper teacher-page">
 
         <div class="page-header">
-            <div class="page-title">กรอกคะแนนรายคน</div>
+            <div class="page-title">กรอกคะแนนรายวิชา</div>
         </div>
 
         <div id="headerInfoBox"></div>
@@ -49,7 +53,7 @@
 
     </main>
 
-    <script type="module" src="../../js/teacher_score_input.js"></script>
+    <script type="module" src="../../js/teacher_score_input.js?v=20260203"></script>
 
 </body>
 </html>

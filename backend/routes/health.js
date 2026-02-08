@@ -3,6 +3,29 @@ import pool from "../db/pool.js";
 
 const router = express.Router();
 
+
+async function ensureHealthColumns() {
+    await pool.query("ALTER TABLE health_records ADD COLUMN IF NOT EXISTS vaccinations JSONB DEFAULT '[]'");
+    await pool.query("ALTER TABLE health_records ADD COLUMN IF NOT EXISTS vision_left TEXT");
+    await pool.query("ALTER TABLE health_records ADD COLUMN IF NOT EXISTS vision_right TEXT");
+}
+
+async function ensureFitnessTable() {
+    await pool.query(
+        `CREATE TABLE IF NOT EXISTS student_fitness_tests (
+            id SERIAL PRIMARY KEY,
+            student_id integer NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+            teacher_id integer NOT NULL REFERENCES teachers(id) ON DELETE CASCADE,
+            test_name character varying(255) NOT NULL,
+            result_value character varying(255),
+            standard_value character varying(255),
+            status character varying(100),
+            year integer NOT NULL,
+            semester integer NOT NULL,
+            created_at timestamp without time zone DEFAULT now()
+        )`
+    );
+}
 // ========================================================
 // 1) GET HEALTH DATA  (Auto Create if not exists)
 // ========================================================
@@ -10,6 +33,8 @@ router.get("/", async (req, res) => {
     const { student_id } = req.query;
 
     try {
+        await ensureHealthColumns();
+        await ensureFitnessTable();
         // 1) ตรวจว่ามีข้อมูลสุขภาพหรือยัง
         let result = await pool.query(
             `SELECT * FROM health_records WHERE student_id = $1`,
@@ -31,7 +56,22 @@ router.get("/", async (req, res) => {
         }
 
         // 3) ส่งข้อมูลกลับหน้าเว็บ
-        res.json(result.rows[0]);
+        const fitness = await pool.query(
+            `SELECT DISTINCT ON (test_name)
+                test_name,
+                result_value,
+                standard_value,
+                status,
+                year,
+                semester,
+                created_at
+             FROM student_fitness_tests
+             WHERE student_id = $1
+             ORDER BY test_name, created_at DESC`,
+            [student_id]
+        );
+
+        res.json({ ...result.rows[0], fitness: fitness.rows });
 
     } catch (err) {
         console.error("🔥 GET HEALTH ERROR:", err);
@@ -51,10 +91,12 @@ router.post("/update", async (req, res) => {
         blood_pressure,
         blood_type,
         allergies,
-        chronic_illness
+        chronic_illness,
+        vaccinations
     } = req.body;
 
     try {
+        await ensureHealthColumns();
         const result = await pool.query(
             `UPDATE health_records
              SET weight=$1,
@@ -63,8 +105,9 @@ router.post("/update", async (req, res) => {
                  blood_type=$4,
                  allergies=$5,
                  chronic_illness=$6,
+                 vaccinations=$7,
                  updated_at=NOW()
-             WHERE student_id=$7
+             WHERE student_id=$8
              RETURNING *`,
             [
                 weight,
@@ -73,6 +116,7 @@ router.post("/update", async (req, res) => {
                 blood_type,
                 allergies,
                 chronic_illness,
+                JSON.stringify(vaccinations || []),
                 student_id
             ]
         );

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แดชบอร์ดผู้อำนวยการ</title>
+    <title>แดชบอร์ด - ผู้อำนวยการ</title>
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -23,12 +23,14 @@
             <li><a href="dashboard.html" class="menu-item active"><i class="fa-solid fa-chart-pie"></i> แดชบอร์ด</a></li>
             <li><a href="students.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> จัดการนักเรียน</a></li>
             <li><a href="teachers.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> จัดการครู</a></li>
+            <li><a href="advisors.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ครูที่ปรึกษา</a></li>
             <li><a href="subjects.html" class="menu-item"><i class="fa-solid fa-book"></i> จัดการรายวิชา</a></li>
             <li><a href="curriculum.html" class="menu-item"><i class="fa-solid fa-layer-group"></i> จัดการหลักสูตร</a></li>
             <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> กิจกรรม</a></li>
-            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ผลประเมิน</a></li>
-            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> การเงิน</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ประเมินการสอน</a></li>
+            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> งบประมาณ</a></li>
             <li><a href="student_count.html" class="menu-item"><i class="fa-solid fa-chart-column"></i> สถิตินักเรียน</a></li>
+            <li><a href="projects.html" class="menu-item"><i class="fa-solid fa-diagram-project"></i> โครงการ</a></li>
         </ul>
 
         <div class="logout-btn" onclick="logoutDirector()">
@@ -40,17 +42,24 @@
         <section class="director-hero">
             <div>
                 <div class="director-kicker">Director Console</div>
-                <h1 class="director-title">ภาพรวมการบริหารโรงเรียน</h1>
-                <p class="director-subtitle">ติดตามข้อมูลสำคัญของโรงเรียนแบบเรียลไทม์</p>
+                <h1 class="director-title">ภาพรวมผู้อำนวยการ</h1>
+                <p class="director-subtitle">ติดตามข้อมูลสำคัญและภาพรวมของระบบได้อย่างรวดเร็ว</p>
             </div>
             <div class="director-hero-cards">
                 <div class="director-hero-card">
                     <div class="director-hero-label">ปีการศึกษา</div>
-                    <div class="director-hero-value">2568</div>
+                    <select class="director-hero-select" id="directorYearSelect">
+                        <option value="2568" selected>2568</option>
+                        <option value="2567">2567</option>
+                        <option value="2566">2566</option>
+                    </select>
                 </div>
                 <div class="director-hero-card">
                     <div class="director-hero-label">ภาคเรียน</div>
-                    <div class="director-hero-value">1</div>
+                    <select class="director-hero-select" id="directorSemesterSelect">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                    </select>
                 </div>
                 <div class="director-hero-card">
                     <div class="director-hero-label">สถานะระบบ</div>
@@ -65,56 +74,68 @@
                 <span class="director-pill">อัปเดตล่าสุด</span>
             </div>
             <div class="director-stats">
-                <div class="director-stat">
-                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
-                    <div>
-                        <div class="stat-label">จำนวนนักเรียน</div>
-                        <div class="stat-value" id="dirCountStudents">—</div>
+                <a class="director-stat-link" href="students.html">
+                    <div class="director-stat">
+                        <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                        <div>
+                            <div class="stat-label">จำนวนนักเรียน</div>
+                            <div class="stat-value" id="dirCountStudents">?</div>
+                        </div>
                     </div>
-                </div>
-                <div class="director-stat">
-                    <div class="stat-icon"><i class="fa-solid fa-user-tie"></i></div>
-                    <div>
-                        <div class="stat-label">จำนวนครู</div>
-                        <div class="stat-value" id="dirCountTeachers">—</div>
+                </a>
+                <a class="director-stat-link" href="teachers.html">
+                    <div class="director-stat">
+                        <div class="stat-icon"><i class="fa-solid fa-user-tie"></i></div>
+                        <div>
+                            <div class="stat-label">จำนวนครู</div>
+                            <div class="stat-value" id="dirCountTeachers">?</div>
+                        </div>
                     </div>
-                </div>
-                <div class="director-stat">
-                    <div class="stat-icon"><i class="fa-solid fa-book"></i></div>
-                    <div>
-                        <div class="stat-label">จำนวนรายวิชา</div>
-                        <div class="stat-value" id="dirCountSubjects">—</div>
+                </a>
+                <a class="director-stat-link" href="subjects.html">
+                    <div class="director-stat">
+                        <div class="stat-icon"><i class="fa-solid fa-book"></i></div>
+                        <div>
+                            <div class="stat-label">จำนวนรายวิชา</div>
+                            <div class="stat-value" id="dirCountSubjects">?</div>
+                        </div>
                     </div>
-                </div>
-                <div class="director-stat">
-                    <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
-                    <div>
-                        <div class="stat-label">กิจกรรมทั้งหมด</div>
-                        <div class="stat-value" id="dirCountActivities">—</div>
+                </a>
+                <a class="director-stat-link" href="activities.html">
+                    <div class="director-stat">
+                        <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                        <div>
+                            <div class="stat-label">กิจกรรมทั้งหมด</div>
+                            <div class="stat-value" id="dirCountActivities">?</div>
+                        </div>
                     </div>
-                </div>
-                <div class="director-stat">
-                    <div class="stat-icon"><i class="fa-solid fa-coins"></i></div>
-                    <div>
-                        <div class="stat-label">รายรับ</div>
-                        <div class="stat-value" id="dirIncome">—</div>
+                </a>
+                <a class="director-stat-link" href="finance.html">
+                    <div class="director-stat">
+                        <div class="stat-icon"><i class="fa-solid fa-coins"></i></div>
+                        <div>
+                            <div class="stat-label">รายรับ</div>
+                            <div class="stat-value" id="dirIncome">?</div>
+                        </div>
                     </div>
-                </div>
-                <div class="director-stat">
-                    <div class="stat-icon"><i class="fa-solid fa-money-bill"></i></div>
-                    <div>
-                        <div class="stat-label">รายจ่าย</div>
-                        <div class="stat-value" id="dirExpense">—</div>
+                </a>
+                <a class="director-stat-link" href="finance.html">
+                    <div class="director-stat">
+                        <div class="stat-icon"><i class="fa-solid fa-money-bill"></i></div>
+                        <div>
+                            <div class="stat-label">รายจ่าย</div>
+                            <div class="stat-value" id="dirExpense">?</div>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         </section>
 
         <section class="director-grid">
             <div class="director-section">
                 <div class="director-section-head">
-                    <h3><i class="fa-solid fa-chart-column"></i> สถิติจำนวนนักเรียน</h3>
-                    <span class="director-pill">จำแนกตามระดับชั้น</span>
+                    <h3><i class="fa-solid fa-chart-column"></i> สถิติจำนวนนักเรียนแยกตามระดับชั้น</h3>
+                    <span class="director-pill">สรุปตามระดับชั้น</span>
                 </div>
                 <div class="director-chart-box">
                     <canvas id="dirStudentCountChart" height="220"></canvas>
@@ -123,7 +144,7 @@
             </div>
             <div class="director-section">
                 <div class="director-section-head">
-                    <h3><i class="fa-solid fa-calendar-check"></i> กิจกรรมล่าสุด</h3>
+                    <h3><i class="fa-solid fa-calendar-check"></i> รายการกิจกรรมล่าสุด</h3>
                     <span class="director-pill">5 รายการล่าสุด</span>
                 </div>
                 <div class="director-list" id="dirActivityList"></div>
@@ -135,4 +156,3 @@
     <script type="module" src="../../js/director_dashboard.js"></script>
 </body>
 </html>
-

@@ -43,16 +43,6 @@
                 <h1 class="student-title">สมุดบันทึกสุขภาพ</h1>
                 <p class="student-subtitle">ติดตามค่าสุขภาพและอัปเดตข้อมูลของคุณ</p>
             </div>
-            <div class="student-hero-cards">
-                <div class="student-hero-card">
-                    <div class="student-hero-label">BMI</div>
-                    <div class="student-hero-value" id="bmiVal">-</div>
-                </div>
-                <div class="student-hero-card">
-                    <div class="student-hero-label">สถานะ</div>
-                    <div class="student-hero-value" id="bmiText">-</div>
-                </div>
-            </div>
         </section>
 
         <section class="student-section">
@@ -61,6 +51,20 @@
                 <span class="student-pill">สถิติสำคัญ</span>
             </div>
             <div class="student-stats">
+                <div class="student-stat">
+                    <div class="stat-icon"><i class="fa-solid fa-heart-circle-check"></i></div>
+                    <div>
+                        <div class="stat-label">BMI</div>
+                        <div class="stat-value" id="bmiVal">-</div>
+                    </div>
+                </div>
+                <div class="student-stat">
+                    <div class="stat-icon"><i class="fa-solid fa-circle-info"></i></div>
+                    <div>
+                        <div class="stat-label">สถานะ</div>
+                        <div class="stat-value" id="bmiText">-</div>
+                    </div>
+                </div>
                 <div class="student-stat">
                     <div class="stat-icon"><i class="fa-solid fa-weight-scale"></i></div>
                     <div>
@@ -103,6 +107,10 @@
                     <span>โรคประจำตัว</span>
                     <strong id="chronicVal">-</strong>
                 </div>
+                <div class="health-detail-item">
+                    <span>ค่าสายตา (ซ้าย/ขวา)</span>
+                    <strong id="visionVal">-</strong>
+                </div>
             </div>
 
             <div class="student-section">
@@ -113,6 +121,55 @@
                 <button type="button" class="btn-primary" id="openHealthModalBtn">
                     แก้ไขข้อมูลสุขภาพ
                 </button>
+            </div>
+        </section>
+
+        <section class="student-grid">
+            <div class="student-section">
+                <div class="student-section-head">
+                    <h3><i class="fa-solid fa-syringe"></i> ประวัติการได้รับวัคซีน</h3>
+                    <span class="student-pill">วัคซีนล่าสุด</span>
+                </div>
+                <div class="table-container">
+                    <table class="student-table">
+                        <thead>
+                            <tr>
+                                <th>ชื่อวัคซีน</th>
+                                <th class="center">วันที่ได้รับ</th>
+                                <th class="center">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vaccineTableBody">
+                            <tr>
+                                <td colspan="3" class="center">ยังไม่มีข้อมูล</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fa-solid fa-person-running"></i> ผลทดสอบสมรรถภาพทางกาย</h3>
+                <span class="student-pill">Physical Fitness</span>
+            </div>
+            <div class="table-container">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>รายการทดสอบ</th>
+                            <th class="center">ผลล่าสุด</th>
+                            <th class="center">เกณฑ์</th>
+                            <th class="center">สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fitnessTableBody">
+                        <tr>
+                            <td colspan="4" class="center">ยังไม่มีข้อมูล</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
     </main>
@@ -153,6 +210,12 @@
                 <div class="health-row textarea-row">
                     <label for="inputChronic">โรคประจำตัว</label>
                     <textarea id="inputChronic"></textarea>
+                </div>
+
+                <div class="health-row textarea-row">
+                    <label>ประวัติการได้รับวัคซีน</label>
+                    <div id="vaccineInputs"></div>
+                    <button type="button" class="btn-outline" id="addVaccineRowBtn">เพิ่มวัคซีน</button>
                 </div>
 
                 <button type="submit" class="btn-primary" style="margin-top:15px;">

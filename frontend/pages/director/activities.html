@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>กิจกรรมโรงเรียน</title>
+    <title>กิจกรรม</title>
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -17,19 +17,19 @@
                 <span>ผู้อำนวยการ</span>
             </div>
         </div>
-
         <ul class="menu-list">
             <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> แดชบอร์ด</a></li>
             <li><a href="students.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> จัดการนักเรียน</a></li>
             <li><a href="teachers.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> จัดการครู</a></li>
+            <li><a href="advisors.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ครูที่ปรึกษา</a></li>
             <li><a href="subjects.html" class="menu-item"><i class="fa-solid fa-book"></i> จัดการรายวิชา</a></li>
             <li><a href="curriculum.html" class="menu-item"><i class="fa-solid fa-layer-group"></i> จัดการหลักสูตร</a></li>
             <li><a href="activities.html" class="menu-item active"><i class="fa-solid fa-calendar-check"></i> กิจกรรม</a></li>
-            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ผลประเมิน</a></li>
-            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> การเงิน</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ประเมินการสอน</a></li>
+            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> งบประมาณ</a></li>
             <li><a href="student_count.html" class="menu-item"><i class="fa-solid fa-chart-column"></i> สถิตินักเรียน</a></li>
+            <li><a href="projects.html" class="menu-item"><i class="fa-solid fa-diagram-project"></i> โครงการ</a></li>
         </ul>
-
         <div class="logout-btn" onclick="logoutDirector()">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
         </div>
@@ -38,61 +38,105 @@
     <main class="main-wrapper director-page">
         <section class="director-hero">
             <div>
-                <div class="director-kicker">Activities</div>
-                <h1 class="director-title">กิจกรรมโรงเรียน</h1>
-                <p class="director-subtitle">เพิ่มและติดตามกิจกรรมสำคัญของโรงเรียน</p>
+                <div class="director-kicker">กิจกรรม</div>
+                <h1 class="director-title">จัดการกิจกรรมโรงเรียน</h1>
+                <p class="director-subtitle">เพิ่ม แก้ไข และติดตามกิจกรรม พร้อมกำหนดครูเวรรายสัปดาห์</p>
             </div>
         </section>
 
-        <section class="director-section">
-            <div class="director-section-head">
-                <h3><i class="fa-solid fa-calendar-plus"></i> เพิ่มกิจกรรม</h3>
-                <span class="director-pill">ข้อมูลกิจกรรม</span>
-            </div>
-            <div class="director-actions">
-                <button class="btn-primary" id="openActivityModalBtn">เพิ่มกิจกรรม</button>
-            </div>
-        </section>
+        <section class="director-activities-grid">
+            <div class="activity-left">
+                <div class="activity-card">
+                    <div class="activity-card-head">
+                        <h3><i class="fa-solid fa-user-shield"></i> ครูเวรประจำสัปดาห์</h3>
+                        <span class="director-pill">รายอาทิตย์</span>
+                    </div>
+                    <div class="activity-duty-form">
+                        <div>
+                            <label>เลือกสัปดาห์ (วันจันทร์)</label>
+                            <input type="date" id="dutyWeekInput">
+                        </div>
+                        <div>
+                            <label>เพิ่มครูเวร</label>
+                            <select id="dutyTeacherSelect"></select>
+                        </div>
+                        <button class="btn-primary" id="addDutyBtn">เพิ่มครูเวร</button>
+                    </div>
+                    <div id="dutyList" class="activity-duty-list"></div>
+                </div>
 
-        <section class="director-section">
-            <div class="director-section-head">
-                <h3><i class="fa-solid fa-list"></i> รายการกิจกรรม</h3>
-                <span class="director-pill">จัดการ</span>
+                <div class="activity-card">
+                    <div class="activity-card-head">
+                        <h3><i class="fa-solid fa-calendar-plus"></i> เพิ่มกิจกรรม</h3>
+                        <span class="director-pill">ฟอร์มเพิ่มข้อมูล</span>
+                    </div>
+                    <div class="director-actions">
+                        <button class="btn-primary" id="openActivityModalBtn">เพิ่มกิจกรรมใหม่</button>
+                    </div>
+                </div>
             </div>
-            <table class="director-table">
-                <thead>
-                    <tr>
-                        <th>กิจกรรม</th>
-                        <th>วันที่</th>
-                        <th>สถานที่</th>
-                        <th>จัดการ</th>
-                    </tr>
-                </thead>
-                <tbody id="activitiesBody"></tbody>
-            </table>
+
+            <div class="activity-right">
+                <div class="activity-card">
+                    <div class="activity-card-head">
+                        <h3><i class="fa-solid fa-flag"></i> กิจกรรมที่กำลังมา</h3>
+                        <span class="director-pill">รายการทั้งหมด</span>
+                    </div>
+                    <div class="activity-filter-bar">
+                        <button class="filter-chip active" data-category="">ทั้งหมด</button>
+                        <button class="filter-chip" data-category="กิจกรรมภายใน">กิจกรรมภายใน</button>
+                        <button class="filter-chip" data-category="วิชาการ">วิชาการ</button>
+                        <button class="filter-chip" data-category="วันหยุด">วันหยุด</button>
+                        <button class="filter-chip" data-category="การประชุม">การประชุม</button>
+                        <button class="filter-chip" data-category="อื่นๆ">อื่นๆ</button>
+                    </div>
+                    <div class="activity-search">
+                        <input type="text" id="activitySearch" placeholder="ค้นหา...">
+                        <button class="btn-outline" id="searchActivityBtn">ค้นหา</button>
+                    </div>
+                    <div id="activityList" class="activity-list"></div>
+                </div>
+            </div>
         </section>
     </main>
 
     <div class="modal" id="activityModal">
         <div class="modal-backdrop" data-modal-close="activityModal"></div>
-        <div class="modal-content">
+        <div class="modal-content modal-content-wide">
             <div class="modal-header">
-                <h3>เพิ่ม/แก้ไขกิจกรรม</h3>
-                <button class="modal-close" data-modal-close="activityModal">×</button>
+                <h3>เพิ่ม / แก้ไข กิจกรรม</h3>
+                <button class="modal-close" data-modal-close="activityModal">x</button>
             </div>
-            <div class="director-form-grid">
-                <input type="hidden" id="activityId">
-                <div>
-                    <label>ชื่อกิจกรรม</label>
-                    <input type="text" id="activityName">
-                </div>
-                <div>
-                    <label>วันที่</label>
-                    <input type="date" id="activityDate">
-                </div>
-                <div>
-                    <label>สถานที่</label>
-                    <input type="text" id="activityLocation">
+            <input type="hidden" id="activityId">
+            <div class="student-form-section">
+                <div class="student-form-title"><i class="fa-solid fa-calendar"></i> ข้อมูลกิจกรรม</div>
+                <div class="student-form-grid">
+                    <div>
+                        <label>ชื่อกิจกรรม</label>
+                        <input type="text" id="activityName" placeholder="ชื่อกิจกรรม">
+                    </div>
+                    <div>
+                        <label>ประเภท</label>
+                        <select id="activityCategory">
+                            <option value="กิจกรรมภายใน">กิจกรรมภายใน</option>
+                            <option value="วิชาการ">วิชาการ</option>
+                            <option value="วันหยุด">วันหยุด</option>
+                            <option value="การประชุม">การประชุม</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>วันที่</label>
+                        <input type="date" id="activityDate">
+                    </div>
+                    <div>
+                        <label>สถานที่</label>
+                        <input type="text" id="activityLocation" placeholder="สถานที่จัดกิจกรรม">
+                    </div>
+                    <div class="student-form-wide">
+                        <label>หมายเหตุ</label>
+                        <textarea id="activityNote" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+                    </div>
                 </div>
             </div>
             <div class="director-actions" style="margin-top:14px;">

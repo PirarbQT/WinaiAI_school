@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผลประเมิน</title>
+    <title>ประเมินการสอน</title>
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -17,154 +17,149 @@
                 <span>ผู้อำนวยการ</span>
             </div>
         </div>
-
         <ul class="menu-list">
             <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> แดชบอร์ด</a></li>
             <li><a href="students.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> จัดการนักเรียน</a></li>
             <li><a href="teachers.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> จัดการครู</a></li>
+            <li><a href="advisors.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ครูที่ปรึกษา</a></li>
             <li><a href="subjects.html" class="menu-item"><i class="fa-solid fa-book"></i> จัดการรายวิชา</a></li>
             <li><a href="curriculum.html" class="menu-item"><i class="fa-solid fa-layer-group"></i> จัดการหลักสูตร</a></li>
             <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> กิจกรรม</a></li>
-            <li><a href="evaluation.html" class="menu-item active"><i class="fa-solid fa-clipboard-check"></i> ผลประเมิน</a></li>
-            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> การเงิน</a></li>
+            <li><a href="evaluation.html" class="menu-item active"><i class="fa-solid fa-clipboard-check"></i> ประเมินการสอน</a></li>
+            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> งบประมาณ</a></li>
             <li><a href="student_count.html" class="menu-item"><i class="fa-solid fa-chart-column"></i> สถิตินักเรียน</a></li>
+            <li><a href="projects.html" class="menu-item"><i class="fa-solid fa-diagram-project"></i> โครงการ</a></li>
         </ul>
-
         <div class="logout-btn" onclick="logoutDirector()">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
         </div>
     </aside>
 
-    <main class="main-wrapper director-page">
-        <section class="director-hero">
+<main class="main-wrapper director-page">
+    <section class="director-hero">
+        <div>
+            <div class="director-kicker">ประเมินการสอน</div>
+            <h1 class="director-title">ผลประเมินการสอน</h1>
+            <p class="director-subtitle">สรุปคะแนนเฉลี่ยตามหัวข้อ</p>
+        </div>
+    </section>
+
+    <section class="director-section">
+        <div class="director-section-head">
+            <h3><i class="fa-solid fa-filter"></i> ตัวกรอง</h3>
+            <span class="director-pill">ปี / ภาคเรียน</span>
+        </div>
+        <div class="director-form-grid director-form-grid-tight">
             <div>
-                <div class="director-kicker">Evaluation</div>
-                <h1 class="director-title">ผลประเมินสมรรถนะผู้เรียน</h1>
-                <p class="director-subtitle">สรุปคะแนนเฉลี่ยรายหัวข้อ</p>
+                <label>ปีการศึกษา</label>
+                <select id="evalYear" class="custom-select">
+                    <option value="2568" selected>2568</option>
+                    <option value="2567">2567</option>
+                    <option value="2566">2566</option>
+                </select>
             </div>
-        </section>
-
-        <section class="director-section">
-            <div class="director-section-head">
-                <h3><i class="fa-solid fa-filter"></i> ตัวกรอง</h3>
-                <span class="director-pill">ปี/เทอม</span>
-            </div>
-            <div class="director-form-grid">
-                <div>
-                    <label>ปีการศึกษา</label>
-                    <input type="number" id="evalYear" value="2568">
-                </div>
-                <div>
-                    <label>ภาคเรียน</label>
-                    <input type="number" id="evalSemester" value="1">
-                </div>
-                <div class="director-actions">
-                    <button class="btn-primary" id="loadEvalBtn">โหลดผล</button>
-                </div>
-            </div>
-        </section>
-
-        <section class="director-section">
-            <div class="director-section-head">
-                <h3><i class="fa-solid fa-chart-simple"></i> คะแนนเฉลี่ยรายหัวข้อ</h3>
-                <span class="director-pill">Summary</span>
-            </div>
-            <table class="director-table">
-                <thead>
-                    <tr>
-                        <th>หัวข้อ</th>
-                        <th>คะแนนเฉลี่ย</th>
-                    </tr>
-                </thead>
-                <tbody id="evaluationBody"></tbody>
-            </table>
-        </section>
-
-        <section class="director-section">
-            <div class="director-section-head">
-                <h3><i class="fa-solid fa-pen-to-square"></i> จัดการผลประเมิน</h3>
-                <span class="director-pill">Popup Form</span>
+            <div>
+                <label>ภาคเรียน</label>
+                <select id="evalSemester" class="custom-select">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                </select>
             </div>
             <div class="director-actions">
-                <button class="btn-primary" id="openStudentEvalModalBtn">แก้ไขผลประเมินรายนักเรียน</button>
-                <button class="btn-outline" id="openTopicModalBtn">จัดการหัวข้อประเมิน</button>
-            </div>
-        </section>
-    </main>
-
-    <div class="modal" id="studentEvalModal">
-        <div class="modal-backdrop" data-modal-close="studentEvalModal"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>แก้ไขผลประเมินรายนักเรียน</h3>
-                <button class="modal-close" data-modal-close="studentEvalModal">×</button>
-            </div>
-            <div class="director-form-grid">
-                <div>
-                    <label>ค้นหานักเรียน</label>
-                    <input type="text" id="evalStudentSearch" placeholder="ค้นหาชื่อหรือรหัสนักเรียน">
-                </div>
-                <div>
-                    <label>เลือกนักเรียน</label>
-                    <select id="evalStudentSelect"></select>
-                </div>
-                <div>
-                    <label>รหัสผ่านผู้อำนวยการ</label>
-                    <input type="password" id="evalPassword" placeholder="กรอกรหัสผ่านเพื่อยืนยัน">
-                </div>
-                <div class="director-actions">
-                    <button class="btn-outline" id="loadStudentEvalBtn">โหลดผลประเมิน</button>
-                    <button class="btn-outline" id="addEvalRowBtn">เพิ่มหัวข้อ</button>
-                    <button class="btn-primary" id="saveStudentEvalBtn">บันทึกการแก้ไข</button>
-                </div>
-            </div>
-            <div class="director-table-wrap">
-                <table class="director-table director-edit-table">
-                    <thead>
-                        <tr>
-                            <th>หัวข้อประเมิน</th>
-                            <th class="center">คะแนน</th>
-                            <th class="center">จัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="evalStudentBody"></tbody>
-                </table>
+                <button class="btn-primary" id="loadEvalBtn">โหลดข้อมูล</button>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="modal" id="topicModal">
-        <div class="modal-backdrop" data-modal-close="topicModal"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>จัดการหัวข้อประเมิน</h3>
-                <button class="modal-close" data-modal-close="topicModal">×</button>
+    <section class="director-section">
+        <div class="director-section-head">
+            <h3><i class="fa-solid fa-chart-simple"></i> คะแนนเฉลี่ยตามหัวข้อ</h3>
+            <span class="director-pill">สรุป</span>
+        </div>
+        <table class="director-table">
+            <thead>
+                <tr>
+                    <th>หัวข้อ</th>
+                    <th>คะแนนเฉลี่ย</th>
+                </tr>
+            </thead>
+            <tbody id="evaluationBody"></tbody>
+        </table>
+    </section>
+
+    <section class="director-section">
+        <div class="director-section-head">
+            <h3><i class="fa-solid fa-pen-to-square"></i> จัดการผลประเมิน</h3>
+            <span class="director-pill">Popup Form</span>
+        </div>
+        <div class="director-actions">
+            <button class="btn-primary" id="openStudentEvalModalBtn">แก้ไขผลนักเรียน</button>
+            <button class="btn-outline" id="openTopicModalBtn">จัดการหัวข้อ</button>
+        </div>
+    </section>
+</main>
+
+<div class="modal" id="studentEvalModal">
+    <div class="modal-backdrop" data-modal-close="studentEvalModal"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>แก้ไขผลประเมินรายนักเรียน</h3>
+            <button class="modal-close" data-modal-close="studentEvalModal">x</button>
+        </div>
+        <div class="director-form-grid">
+            <div>
+                <label>ค้นหานักเรียน</label>
+                <input type="text" id="evalStudentSearch" placeholder="ค้นหาจากชื่อหรือรหัส">
             </div>
-            <div class="director-form-grid" style="margin-bottom: 12px;">
-                <div>
-                    <label>รหัสผ่านผู้อำนวยการ</label>
-                    <input type="password" id="topicPassword" placeholder="กรอกรหัสผ่านเพื่อยืนยัน">
-                </div>
-                <div class="director-actions">
-                    <button class="btn-outline" id="reloadTopicsBtn">โหลดหัวข้อ</button>
-                </div>
+            <div>
+                <label>เลือกนักเรียน</label>
+                <select id="evalStudentSelect"></select>
             </div>
-            <table class="director-table">
+            <div class="director-actions">
+                <button class="btn-outline" id="loadStudentEvalBtn">โหลดข้อมูล</button>
+                <button class="btn-outline" id="addEvalRowBtn">เพิ่มหัวข้อ</button>
+                <button class="btn-primary" id="saveStudentEvalBtn">บันทึก</button>
+            </div>
+        </div>
+        <div class="director-table-wrap">
+            <table class="director-table director-edit-table">
                 <thead>
                     <tr>
                         <th>หัวข้อ</th>
-                        <th class="center">คะแนนเฉลี่ย</th>
-                        <th class="center">จำนวนรายการ</th>
-                        <th>ชื่อใหม่</th>
+                        <th class="center">คะแนน</th>
                         <th class="center">จัดการ</th>
                     </tr>
                 </thead>
-                <tbody id="evalTopicBody"></tbody>
+                <tbody id="evalStudentBody"></tbody>
             </table>
         </div>
     </div>
+</div>
 
-    <script type="module" src="../../js/app.js"></script>
-    <script type="module" src="../../js/director_evaluation.js"></script>
+<div class="modal" id="topicModal">
+    <div class="modal-backdrop" data-modal-close="topicModal"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>จัดการหัวข้อประเมิน</h3>
+            <button class="modal-close" data-modal-close="topicModal">ปิด</button>
+        </div>
+        <div style="margin-bottom:12px;"></div>
+        <table class="director-table">
+            <thead>
+                <tr>
+                    <th>หัวข้อ</th>
+                    <th class="center">คะแนนเฉลี่ย</th>
+                    <th class="center">จำนวนรายการ</th>
+                    <th>ชื่อใหม่</th>
+                    <th class="center">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="evalTopicBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script type="module" src="../../js/app.js"></script>
+<script type="module" src="../../js/director_evaluation.js"></script>
 </body>
 </html>

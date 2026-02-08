@@ -17,19 +17,19 @@
                 <span>ผู้อำนวยการ</span>
             </div>
         </div>
-
         <ul class="menu-list">
             <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-chart-pie"></i> แดชบอร์ด</a></li>
             <li><a href="students.html" class="menu-item"><i class="fa-solid fa-user-graduate"></i> จัดการนักเรียน</a></li>
             <li><a href="teachers.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> จัดการครู</a></li>
+            <li><a href="advisors.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ครูที่ปรึกษา</a></li>
             <li><a href="subjects.html" class="menu-item active"><i class="fa-solid fa-book"></i> จัดการรายวิชา</a></li>
             <li><a href="curriculum.html" class="menu-item"><i class="fa-solid fa-layer-group"></i> จัดการหลักสูตร</a></li>
             <li><a href="activities.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> กิจกรรม</a></li>
-            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ผลประเมิน</a></li>
-            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> การเงิน</a></li>
+            <li><a href="evaluation.html" class="menu-item"><i class="fa-solid fa-clipboard-check"></i> ประเมินการสอน</a></li>
+            <li><a href="finance.html" class="menu-item"><i class="fa-solid fa-coins"></i> งบประมาณ</a></li>
             <li><a href="student_count.html" class="menu-item"><i class="fa-solid fa-chart-column"></i> สถิตินักเรียน</a></li>
+            <li><a href="projects.html" class="menu-item"><i class="fa-solid fa-diagram-project"></i> โครงการ</a></li>
         </ul>
-
         <div class="logout-btn" onclick="logoutDirector()">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
         </div>
@@ -38,65 +38,191 @@
     <main class="main-wrapper director-page">
         <section class="director-hero">
             <div>
-                <div class="director-kicker">Subject Management</div>
-                <h1 class="director-title">จัดการรายวิชา</h1>
-                <p class="director-subtitle">เพิ่มและจัดการรายวิชาของโรงเรียน</p>
+                <div class="director-kicker">ข้อมูลรายวิชา</div>
+                <h1 class="director-title">ข้อมูลรายวิชา (Courses)</h1>
+                <p class="director-subtitle">จัดการรายวิชา แยกตามกลุ่มสาระและประเภทได้สะดวก</p>
             </div>
         </section>
 
         <section class="director-section">
             <div class="director-section-head">
-                <h3><i class="fa-solid fa-book-open"></i> เพิ่ม/แก้ไขรายวิชา</h3>
-                <span class="director-pill">ข้อมูลรายวิชา</span>
+                <h3><i class="fa-solid fa-filter"></i> ค้นหา/ตัวกรอง</h3>
+                <span class="director-pill">ปีการศึกษา / กลุ่มสาระ</span>
+            </div>
+            <div class="subject-filter-grid">
+                <div>
+                    <label>ค้นหา</label>
+                    <input id="subjectSearch" type="text" placeholder="ค้นหารหัสหรือชื่อวิชา...">
+                </div>
+                <div>
+                    <label>ระดับชั้น</label>
+                    <select id="subjectLevelFilter">
+                        <option value="">ทุกระดับชั้น</option>
+                        <option value="ม.1">ม.1</option>
+                        <option value="ม.2">ม.2</option>
+                        <option value="ม.3">ม.3</option>
+                        <option value="ม.4">ม.4</option>
+                        <option value="ม.5">ม.5</option>
+                        <option value="ม.6">ม.6</option>
+                    </select>
+                </div>
+                <div>
+                    <label>กลุ่มสาระ/ฝ่าย</label>
+                    <select id="subjectGroupFilter">
+                        <option value="">ทุกกลุ่มสาระ</option>
+                        <option value="ภาษาไทย">ภาษาไทย</option>
+                        <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                        <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
+                        <option value="สังคมศึกษา">สังคมศึกษา</option>
+                        <option value="สุขศึกษา">สุขศึกษา</option>
+                        <option value="ศิลปะ">ศิลปะ</option>
+                        <option value="การงานอาชีพ">การงานอาชีพ</option>
+                        <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ประเภท</label>
+                    <select id="subjectTypeFilter">
+                        <option value="">ทุกประเภท</option>
+                        <option value="พื้นฐาน">พื้นฐาน</option>
+                        <option value="เพิ่มเติม">เพิ่มเติม</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ปีการศึกษา</label>
+                    <select id="subjectYearFilter">
+                        <option value="">ทุกปี</option>
+                        <option value="2568" selected>2568</option>
+                        <option value="2567">2567</option>
+                        <option value="2566">2566</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ภาคเรียน</label>
+                    <select id="subjectSemesterFilter">
+                        <option value="">ทุกเทอม</option>
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div class="director-actions subject-filter-actions">
+                    <button class="btn-primary" id="searchSubjectBtn">ค้นหา</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="director-section">
+            <div class="director-section-head">
+                <h3><i class="fa-solid fa-circle-plus"></i> เพิ่มรายวิชา</h3>
+                <span class="director-pill">ฟอร์มเพิ่มข้อมูล</span>
             </div>
             <div class="director-actions">
-                <button class="btn-primary" id="openSubjectModalBtn">เพิ่มรายวิชา</button>
+                <button class="btn-primary" id="openSubjectModalBtn">เพิ่มรายวิชาใหม่</button>
             </div>
         </section>
 
         <section class="director-section">
             <div class="director-section-head">
                 <h3><i class="fa-solid fa-list"></i> รายการรายวิชา</h3>
-                <span class="director-pill">จัดการ</span>
+                <span class="director-pill">ผลลัพธ์</span>
             </div>
-            <table class="director-table">
-                <thead>
-                    <tr>
-                        <th>รหัสวิชา</th>
-                        <th>ชื่อรายวิชา</th>
-                        <th>หน่วยกิต</th>
-                        <th>จัดการ</th>
-                    </tr>
-                </thead>
-                <tbody id="subjectsBody"></tbody>
-            </table>
+            <div id="subjectsTableBox">
+                <table class="director-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>รหัสวิชา</th>
+                            <th>ชื่อรายวิชา</th>
+                            <th>หน่วยกิต/ชม.</th>
+                            <th>ประเภท</th>
+                            <th>กลุ่มสาระ</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subjectsBody"></tbody>
+                </table>
+            </div>
         </section>
     </main>
 
     <div class="modal" id="subjectModal">
         <div class="modal-backdrop" data-modal-close="subjectModal"></div>
-        <div class="modal-content">
+        <div class="modal-content modal-content-wide">
             <div class="modal-header">
-                <h3>เพิ่ม/แก้ไขรายวิชา</h3>
-                <button class="modal-close" data-modal-close="subjectModal">×</button>
+                <h3>เพิ่ม / แก้ไข รายวิชา</h3>
+                <button class="modal-close" data-modal-close="subjectModal">x</button>
             </div>
-            <div class="director-form-grid">
-                <input type="hidden" id="subjectId">
-                <div>
-                    <label>รหัสวิชา</label>
-                    <input type="text" id="subjectCode" placeholder="เช่น MATH101">
-                </div>
-                <div>
-                    <label>ชื่อรายวิชา</label>
-                    <input type="text" id="subjectName" placeholder="เช่น คณิตศาสตร์พื้นฐาน">
-                </div>
-                <div>
-                    <label>หน่วยกิต</label>
-                    <input type="number" id="subjectCredit" placeholder="เช่น 3">
+            <input type="hidden" id="subjectId">
+
+            <div class="student-form-section">
+                <div class="student-form-title"><i class="fa-solid fa-clipboard"></i> ข้อมูลทั่วไป</div>
+                <div class="student-form-grid">
+                    <div>
+                        <label>ปีการศึกษา</label>
+                        <select id="subjectYear">
+                            <option value="2568" selected>2568</option>
+                            <option value="2567">2567</option>
+                            <option value="2566">2566</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>ภาคเรียน</label>
+                        <select id="subjectSemester">
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>รหัสวิชา</label>
+                        <input type="text" id="subjectCode" placeholder="เช่น ท21101">
+                    </div>
+                    <div>
+                        <label>ชื่อรายวิชา (ไทย)</label>
+                        <input type="text" id="subjectNameTh" placeholder="เช่น ภาษาไทย 1">
+                    </div>
+                    <div>
+                        <label>ชื่อรายวิชา (English)</label>
+                        <input type="text" id="subjectNameEn" placeholder="e.g. Thai Language 1">
+                    </div>
                 </div>
             </div>
+
+            <div class="student-form-section">
+                <div class="student-form-title"><i class="fa-solid fa-layer-group"></i> รายละเอียดทางวิชาการ</div>
+                <div class="student-form-grid">
+                    <div>
+                        <label>ประเภทวิชา</label>
+                        <select id="subjectType">
+                            <option value="พื้นฐาน">พื้นฐาน</option>
+                            <option value="เพิ่มเติม">เพิ่มเติม</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>กลุ่มสาระ</label>
+                        <input type="text" id="subjectGroup" placeholder="เช่น ภาษาไทย">
+                    </div>
+                    <div>
+                        <label>ระดับชั้น</label>
+                        <input type="text" id="subjectLevel" placeholder="เช่น มัธยมศึกษาปีที่ 1">
+                    </div>
+                    <div>
+                        <label>หน่วยกิต / ชม.</label>
+                        <div class="subject-credit-row">
+                            <input type="number" id="subjectCredit" min="0" step="0.5" placeholder="1.5">
+                            <span>/</span>
+                            <input type="number" id="subjectHours" min="0" step="1" placeholder="60">
+                            <span>ชม.</span>
+                        </div>
+                    </div>
+                    <div class="student-form-wide">
+                        <label>คำอธิบายรายวิชา</label>
+                        <textarea id="subjectDescription" rows="3" placeholder="ระบุคำอธิบายรายวิชา..."></textarea>
+                    </div>
+                </div>
+            </div>
+
             <div class="director-actions" style="margin-top:14px;">
-                <button class="btn-primary" id="saveSubjectBtn">บันทึก</button>
+                <button class="btn-primary" id="saveSubjectBtn">บันทึกข้อมูล</button>
                 <button class="btn-outline" id="resetSubjectBtn">ล้างค่า</button>
             </div>
         </div>
@@ -106,4 +232,3 @@
     <script type="module" src="../../js/director_subjects.js"></script>
 </body>
 </html>
-

@@ -1,5 +1,6 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,13 +19,17 @@
                 <span>ครู</span>
             </div>
         </div>
-<ul class="menu-list">
+        <ul class="menu-list">
             <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
             <li><a href="students.html" class="menu-item"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
             <li><a href="attendance.html" class="menu-item active"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
             <li><a href="scores.html" class="menu-item"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
             <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="teaching_evaluation.html" class="menu-item"><i class="fa-solid fa-chart-line"></i> ผลประเมินการสอน</a></li>
+            <li><a href="advisor_evaluation.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ประเมินนักเรียน</a></li>
+            <li><a href="fitness.html" class="menu-item"><i class="fa-solid fa-dumbbell"></i> ทดสอบสมรรถนะ</a></li>
             <li><a href="calendar.html" class="menu-item"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+            <li><a href="exam_calendar.html" class="menu-item"><i class="fa-solid fa-clipboard-list"></i> ตารางสอบ</a></li>
         </ul>
 
         <div class="logout-btn" onclick="logoutTeacher()">
@@ -33,15 +38,15 @@
     </aside>
 
     <main class="main-wrapper teacher-page attendance-page">
-        
+
         <section class="attendance-hero">
             <div>
                 <div class="attendance-kicker">Attendance</div>
                 <h1 class="attendance-title">เช็คชื่อนักเรียน</h1>
-                <p class="attendance-subtitle">เลือกวิชา ระบบจะช่วยดึงระดับชั้นและห้องให้โดยอัตโนมัติ</p>
+                <p class="attendance-subtitle">เลือกวิชา ระบบจะดึงรายชื่อตามชั้นและห้องให้โดยอัตโนมัติ</p>
             </div>
             <div class="attendance-hero-card">
-                <div class="attendance-hero-label">สถานะ</div>
+                <div class="attendance-hero-label">สถานะวันนี้</div>
                 <div class="attendance-hero-value">พร้อมเช็คชื่อ</div>
             </div>
         </section>
@@ -79,7 +84,7 @@
                     <label>วันที่</label>
                     <div class="attendance-action-row">
                         <input type="date" id="datePick">
-                        <button class="btn-primary" id="loadStudentsBtn">แสดงรายชื่อนักเรียน</button>
+                        <button class="btn-primary" id="loadStudentsBtn">โหลดรายชื่อนักเรียน</button>
                     </div>
                 </div>
             </div>
@@ -88,7 +93,7 @@
         <section class="attendance-list-card">
             <div class="attendance-list-header">
                 <h3>รายชื่อนักเรียน</h3>
-                <span class="attendance-pill">เลือกสถานะแล้วบันทึกได้ทันที</span>
+                <span class="attendance-pill">เลือกสถานะแต่ละคนแล้วบันทึกได้ทันที</span>
             </div>
             <div id="studentListContainer"></div>
             <button class="btn-save" id="saveAttendanceBtn" style="display:none">บันทึกการเช็คชื่อ</button>
@@ -96,8 +101,32 @@
 
     </main>
 
+    <div class="modal" id="studentEvalModal">
+        <div class="modal-backdrop" data-modal-close="studentEvalModal"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>ประเมินสมรรถนะนักเรียน</h3>
+                <button class="modal-close" data-modal-close="studentEvalModal">x</button>
+            </div>
+            <div class="director-form-grid">
+                <div>
+                    <label>นักเรียน</label>
+                    <input type="text" id="evalStudentName" readonly>
+                </div>
+                <div>
+                    <label>รายวิชา</label>
+                    <input type="text" id="evalSubjectName" readonly>
+                </div>
+            </div>
+            <div id="studentEvalTopics" style="margin-top:14px;"></div>
+            <div class="director-actions" style="margin-top:14px;">
+                <button class="btn-primary" id="saveStudentEvalBtn">บันทึกผลประเมิน</button>
+                <button class="btn-outline" data-modal-close="studentEvalModal">ปิด</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="../../js/teacher_attendance.js"></script>
 </body>
+
 </html>
-
-

@@ -29,12 +29,15 @@ router.get("/exam", async (req, res) => {
     const { student_id, year, semester } = req.query;
 
     const result = await pool.query(
-        `SELECT es.*, s.subject_code, s.name AS subject_name
+        `SELECT es.*, s.subject_code, s.name AS subject_name,
+                ss.id AS section_id, ss.class_level, ss.classroom AS room
          FROM exam_schedule es
          JOIN subject_sections ss ON es.section_id = ss.id
          JOIN subjects s ON ss.subject_id = s.id
          JOIN registrations r ON r.section_id = ss.id
-         WHERE r.student_id = $1 AND r.year = $2 AND r.semester = $3`,
+         WHERE r.student_id = $1
+           AND ss.year = $2 AND ss.semester = $3
+           AND (r.status IS NULL OR r.status IN ('cart','registered'))`,
         [student_id, year, semester]
     );
 

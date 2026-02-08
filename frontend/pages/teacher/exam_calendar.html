@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตารางสอบ - ครู</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-section">
+            <div class="logo-icon" data-avatar-role="teacher"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="logo-text">
+                <h3>WinAI School</h3>
+                <span>ครู</span>
+            </div>
+        </div>
+<ul class="menu-list">
+            <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
+            <li><a href="students.html" class="menu-item"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
+            <li><a href="attendance.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
+            <li><a href="scores.html" class="menu-item"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
+            <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="teaching_evaluation.html" class="menu-item"><i class="fa-solid fa-chart-line"></i> ผลประเมินการสอน</a></li>
+            <li><a href="advisor_evaluation.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ประเมินนักเรียน</a></li>
+            <li><a href="fitness.html" class="menu-item"><i class="fa-solid fa-dumbbell"></i> &#3607;&#3604;&#3626;&#3629;&#3610;&#3626;&#3617;&#3619;&#3619;&#3606;&#3609;&#3632;</a></li>
+            <li><a href="calendar.html" class="menu-item"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+            <li><a href="exam_calendar.html" class="menu-item active"><i class="fa-solid fa-clipboard-list"></i> ตารางสอบ</a></li>
+        </ul>
+
+        <div class="logout-btn" onclick="logoutTeacher()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </div>
+    </aside>
+
+    <main class="main-wrapper teacher-page">
+        <section class="page-header">
+            <div class="page-title">ตารางสอบ</div>
+        </section>
+
+        <section class="teacher-exam-form">
+            <div class="teacher-exam-head">
+                <h3><i class="fa-solid fa-pen-to-square"></i> เพิ่มวันสอบ</h3>
+                <span class="teacher-pill">กลางภาค / ปลายภาค</span>
+            </div>
+            <div class="teacher-exam-grid">
+                <div>
+                    <label>ปีการศึกษา</label>
+                    <select id="examYear" class="form-input">
+                        <option value="2568" selected>2568</option>
+                        <option value="2567">2567</option>
+                        <option value="2566">2566</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ภาคเรียน</label>
+                    <select id="examSemester" class="form-input">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div>
+                    <label>วิชา</label>
+                    <select id="examSubjectSelect" class="form-input"></select>
+                </div>
+                <div>
+                    <label>ประเภทการสอบ</label>
+                    <select id="examType" class="form-input">
+                        <option value="midterm">กลางภาค</option>
+                        <option value="final">ปลายภาค</option>
+                    </select>
+                </div>
+                <div>
+                    <label>วันที่สอบ</label>
+                    <input type="date" id="examDate" class="form-input">
+                </div>
+                <div>
+                    <label>เวลา</label>
+                    <input type="time" id="examTime" class="form-input">
+                </div>
+                <div>
+                    <label>ห้องสอบ</label>
+                    <input type="text" id="examRoom" class="form-input" placeholder="เช่น ห้อง 301">
+                </div>
+                <div class="teacher-exam-actions">
+                    <button class="btn-primary" id="addExamBtn">
+                        <i class="fa-solid fa-plus"></i> เพิ่มวันสอบ
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="teacher-exam-list">
+            <div class="teacher-exam-head">
+                <h3><i class="fa-solid fa-list"></i> รายการวันสอบ</h3>
+                <span class="teacher-pill">จัดการได้ทันที</span>
+            </div>
+            <div class="table-container">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>วิชา</th>
+                            <th class="center">ประเภท</th>
+                            <th class="center">วันที่</th>
+                            <th class="center">เวลา</th>
+                            <th>ห้องสอบ</th>
+                            <th class="center">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="examTableBody">
+                        <tr>
+                            <td colspan="6" class="center">กำลังโหลด...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="../../js/app.js"></script>
+    <script type="module" src="../../js/teacher_exam.js"></script>
+</body>
+</html>

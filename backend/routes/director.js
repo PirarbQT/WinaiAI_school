@@ -25,6 +25,40 @@ async function verifyDirectorPassword(director_code, password) {
     return { ok: true };
 }
 
+async function ensureStudentProfileColumns() {
+    await pool.query(`
+        ALTER TABLE students
+            ADD COLUMN IF NOT EXISTS prefix VARCHAR(20),
+            ADD COLUMN IF NOT EXISTS gender VARCHAR(20),
+            ADD COLUMN IF NOT EXISTS status VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS parent_name VARCHAR(150),
+            ADD COLUMN IF NOT EXISTS parent_phone VARCHAR(30)
+    `);
+}
+
+async function ensureTeacherProfileColumns() {
+    await pool.query(`
+        ALTER TABLE teachers
+            ADD COLUMN IF NOT EXISTS prefix VARCHAR(20),
+            ADD COLUMN IF NOT EXISTS national_id VARCHAR(30),
+            ADD COLUMN IF NOT EXISTS birthday DATE,
+            ADD COLUMN IF NOT EXISTS gender VARCHAR(20),
+            ADD COLUMN IF NOT EXISTS blood_group VARCHAR(5),
+            ADD COLUMN IF NOT EXISTS employment_type VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS position VARCHAR(100),
+            ADD COLUMN IF NOT EXISTS academic_rank VARCHAR(100),
+            ADD COLUMN IF NOT EXISTS department VARCHAR(100),
+            ADD COLUMN IF NOT EXISTS start_date DATE,
+            ADD COLUMN IF NOT EXISTS end_date DATE,
+            ADD COLUMN IF NOT EXISTS license_no VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS salary NUMERIC(12,2),
+            ADD COLUMN IF NOT EXISTS status VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS phone VARCHAR(30),
+            ADD COLUMN IF NOT EXISTS email VARCHAR(120),
+            ADD COLUMN IF NOT EXISTS line_id VARCHAR(60)
+    `);
+}
+
 // SUMMARY
 router.get("/summary", async (req, res) => {
     try {
@@ -38,6 +72,12 @@ router.get("/summary", async (req, res) => {
         const expense = await pool.query(
             "SELECT COALESCE(SUM(amount),0) AS total FROM finance_records WHERE type='expense'"
         );
+        const gender = await pool.query(
+            `SELECT
+                SUM(CASE WHEN gender ILIKE 'ชาย%' OR gender ILIKE 'male%' OR gender ILIKE 'm' THEN 1 ELSE 0 END) AS male,
+                SUM(CASE WHEN gender ILIKE 'หญิง%' OR gender ILIKE 'female%' OR gender ILIKE 'f' THEN 1 ELSE 0 END) AS female
+             FROM students`
+        );
 
         res.json({
             students: Number(students.rows[0].count),
@@ -45,7 +85,9 @@ router.get("/summary", async (req, res) => {
             subjects: Number(subjects.rows[0].count),
             activities: Number(activities.rows[0].count),
             income: Number(income.rows[0].total),
-            expense: Number(expense.rows[0].total)
+            expense: Number(expense.rows[0].total),
+            male: Number(gender.rows[0].male || 0),
+            female: Number(gender.rows[0].female || 0)
         });
     } catch (err) {
         console.error("ERROR /director/summary:", err);
@@ -56,6 +98,7 @@ router.get("/summary", async (req, res) => {
 // STUDENTS CRUD
 router.get("/students", async (req, res) => {
     try {
+        await ensureStudentProfileColumns();
         const { search, class_level, room } = req.query;
 
         const params = [];
@@ -79,7 +122,8 @@ router.get("/students", async (req, res) => {
         }
 
         const result = await pool.query(
-            `SELECT id, student_code, first_name, last_name, class_level, classroom, room, photo_url
+            `SELECT id, student_code, first_name, last_name, class_level, classroom, room,
+                    photo_url, prefix, gender, status, birthday, phone, address, parent_name, parent_phone
              FROM students
              ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
              ORDER BY student_code ASC`,
@@ -94,15 +138,19 @@ router.get("/students", async (req, res) => {
 
 router.post("/students", async (req, res) => {
     try {
-        const { student_code, first_name, last_name, class_level, classroom, room, password } = req.body;
+        await ensureStudentProfileColumns();
+        const { student_code, first_name, last_name, class_level, classroom, room, password, prefix, gender, status, birthday, phone, address, parent_name, parent_phone, photo_url } = req.body;
         if (!student_code) return res.status(400).json({ error: "กรุณากรอกรหัสนักเรียน" });
         const pass = password || "1234";
         const hash = await bcrypt.hash(pass, 10);
 
         const result = await pool.query(
-            `INSERT INTO students(student_code, first_name, last_name, password_hash, class_level, classroom, room)
-             VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
-            [student_code, first_name, last_name, hash, class_level, classroom, room]
+            `INSERT INTO students(
+                student_code, first_name, last_name, password_hash, class_level, classroom, room,
+                prefix, gender, status, birthday, phone, address, parent_name, parent_phone, photo_url
+             )
+             VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING id`,
+            [student_code, first_name, last_name, hash, class_level, classroom, room, prefix || null, gender || null, status || null, birthday || null, phone || null, address || null, parent_name || null, parent_phone || null, photo_url || null]
         );
 
         res.json({ success: true, id: result.rows[0].id });
@@ -115,7 +163,8 @@ router.post("/students", async (req, res) => {
 router.put("/students/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const { student_code, first_name, last_name, class_level, classroom, room, password } = req.body;
+        await ensureStudentProfileColumns();
+        const { student_code, first_name, last_name, class_level, classroom, room, password, prefix, gender, status, birthday, phone, address, parent_name, parent_phone, photo_url } = req.body;
 
         let passwordHash = null;
         if (password) {
@@ -125,16 +174,18 @@ router.put("/students/:id", async (req, res) => {
         if (passwordHash) {
             await pool.query(
                 `UPDATE students 
-                 SET student_code=$1, first_name=$2, last_name=$3, class_level=$4, classroom=$5, room=$6, password_hash=$7 
-                 WHERE id=$8`,
-                [student_code, first_name, last_name, class_level, classroom, room, passwordHash, id]
+                 SET student_code=$1, first_name=$2, last_name=$3, class_level=$4, classroom=$5, room=$6, password_hash=$7,
+                     prefix=$8, gender=$9, status=$10, birthday=$11, phone=$12, address=$13, parent_name=$14, parent_phone=$15, photo_url=$16
+                 WHERE id=$17`,
+                [student_code, first_name, last_name, class_level, classroom, room, passwordHash, prefix || null, gender || null, status || null, birthday || null, phone || null, address || null, parent_name || null, parent_phone || null, photo_url || null, id]
             );
         } else {
             await pool.query(
                 `UPDATE students 
-                 SET student_code=$1, first_name=$2, last_name=$3, class_level=$4, classroom=$5, room=$6 
-                 WHERE id=$7`,
-                [student_code, first_name, last_name, class_level, classroom, room, id]
+                 SET student_code=$1, first_name=$2, last_name=$3, class_level=$4, classroom=$5, room=$6,
+                     prefix=$7, gender=$8, status=$9, birthday=$10, phone=$11, address=$12, parent_name=$13, parent_phone=$14, photo_url=$15
+                 WHERE id=$16`,
+                [student_code, first_name, last_name, class_level, classroom, room, prefix || null, gender || null, status || null, birthday || null, phone || null, address || null, parent_name || null, parent_phone || null, photo_url || null, id]
             );
         }
         res.json({ success: true });
@@ -173,10 +224,11 @@ router.delete("/students/:id", async (req, res) => {
 // TEACHERS CRUD
 router.get("/teachers", async (req, res) => {
     try {
+        await ensureTeacherProfileColumns();
         const { search } = req.query;
         const q = search ? `%${search}%` : null;
         const result = await pool.query(
-            `SELECT id, teacher_code, first_name, last_name, photo_url
+            `SELECT id, teacher_code, first_name, last_name, photo_url, prefix, national_id, birthday, gender, blood_group, employment_type, position, academic_rank, department, start_date, end_date, license_no, salary, status, phone, email, line_id
              FROM teachers
              WHERE ($1::text IS NULL OR teacher_code ILIKE $1 OR first_name ILIKE $1 OR last_name ILIKE $1)
              ORDER BY teacher_code ASC`,
@@ -191,15 +243,20 @@ router.get("/teachers", async (req, res) => {
 
 router.post("/teachers", async (req, res) => {
     try {
-        const { teacher_code, first_name, last_name, password } = req.body;
+        await ensureTeacherProfileColumns();
+        const { teacher_code, first_name, last_name, password, prefix, national_id, birthday, gender, blood_group, employment_type, position, academic_rank, department, start_date, end_date, license_no, salary, status, phone, email, line_id, photo_url } = req.body;
         if (!teacher_code) return res.status(400).json({ error: "กรุณากรอกรหัสครู" });
         const pass = password || "1234";
         const hash = await bcrypt.hash(pass, 10);
 
         const result = await pool.query(
-            `INSERT INTO teachers(teacher_code, first_name, last_name, password_hash)
-             VALUES($1,$2,$3,$4) RETURNING id`,
-            [teacher_code, first_name, last_name, hash]
+            `INSERT INTO teachers(
+                teacher_code, first_name, last_name, password_hash, prefix, national_id, birthday, gender, blood_group,
+                employment_type, position, academic_rank, department, start_date, end_date, license_no, salary, status,
+                phone, email, line_id, photo_url
+             )
+             VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22) RETURNING id`,
+            [teacher_code, first_name, last_name, hash, prefix || null, national_id || null, birthday || null, gender || null, blood_group || null, employment_type || null, position || null, academic_rank || null, department || null, start_date || null, end_date || null, license_no || null, salary || null, status || null, phone || null, email || null, line_id || null, photo_url || null]
         );
         res.json({ success: true, id: result.rows[0].id });
     } catch (err) {
@@ -211,7 +268,8 @@ router.post("/teachers", async (req, res) => {
 router.put("/teachers/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const { teacher_code, first_name, last_name, password } = req.body;
+        await ensureTeacherProfileColumns();
+        const { teacher_code, first_name, last_name, password, prefix, national_id, birthday, gender, blood_group, employment_type, position, academic_rank, department, start_date, end_date, license_no, salary, status, phone, email, line_id, photo_url } = req.body;
 
         let passwordHash = null;
         if (password) {
@@ -221,16 +279,22 @@ router.put("/teachers/:id", async (req, res) => {
         if (passwordHash) {
             await pool.query(
                 `UPDATE teachers 
-                 SET teacher_code=$1, first_name=$2, last_name=$3, password_hash=$4
-                 WHERE id=$5`,
-                [teacher_code, first_name, last_name, passwordHash, id]
+                 SET teacher_code=$1, first_name=$2, last_name=$3, password_hash=$4,
+                     prefix=$5, national_id=$6, birthday=$7, gender=$8, blood_group=$9, employment_type=$10, position=$11,
+                     academic_rank=$12, department=$13, start_date=$14, end_date=$15, license_no=$16, salary=$17, status=$18,
+                     phone=$19, email=$20, line_id=$21, photo_url=$22
+                 WHERE id=$23`,
+                [teacher_code, first_name, last_name, passwordHash, prefix || null, national_id || null, birthday || null, gender || null, blood_group || null, employment_type || null, position || null, academic_rank || null, department || null, start_date || null, end_date || null, license_no || null, salary || null, status || null, phone || null, email || null, line_id || null, photo_url || null, id]
             );
         } else {
             await pool.query(
                 `UPDATE teachers 
-                 SET teacher_code=$1, first_name=$2, last_name=$3
-                 WHERE id=$4`,
-                [teacher_code, first_name, last_name, id]
+                 SET teacher_code=$1, first_name=$2, last_name=$3,
+                     prefix=$4, national_id=$5, birthday=$6, gender=$7, blood_group=$8, employment_type=$9, position=$10,
+                     academic_rank=$11, department=$12, start_date=$13, end_date=$14, license_no=$15, salary=$16, status=$17,
+                     phone=$18, email=$19, line_id=$20, photo_url=$21
+                 WHERE id=$22`,
+                [teacher_code, first_name, last_name, prefix || null, national_id || null, birthday || null, gender || null, blood_group || null, employment_type || null, position || null, academic_rank || null, department || null, start_date || null, end_date || null, license_no || null, salary || null, status || null, phone || null, email || null, line_id || null, photo_url || null, id]
             );
         }
         res.json({ success: true });
@@ -251,11 +315,133 @@ router.delete("/teachers/:id", async (req, res) => {
     }
 });
 
+// ADVISOR (TEACHER ADVISORS)
+router.get("/advisors", async (req, res) => {
+    try {
+        const { year, semester, class_level } = req.query;
+        const params = [];
+        const where = [];
+
+        if (year) {
+            params.push(year);
+            where.push(`ta.year = $${params.length}`);
+        }
+
+        if (semester) {
+            params.push(semester);
+            where.push(`ta.semester = $${params.length}`);
+        }
+
+        if (class_level) {
+            params.push(class_level);
+            where.push(`ta.class_level = $${params.length}`);
+        }
+
+        const result = await pool.query(
+            `SELECT ta.id, ta.class_level, ta.year, ta.semester,
+                    t.id AS teacher_id, t.teacher_code, t.first_name, t.last_name
+             FROM teacher_advisors ta
+             JOIN teachers t ON ta.teacher_id = t.id
+             ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
+             ORDER BY ta.year DESC, ta.semester DESC, ta.class_level ASC`,
+            params
+        );
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error("ERROR /director/advisors GET:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.post("/advisors", async (req, res) => {
+    try {
+        const { teacher_id, class_level, year, semester } = req.body;
+        if (!teacher_id || !class_level || !year || !semester) {
+            return res.status(400).json({ error: "กรุณากรอกข้อมูลให้ครบถ้วน" });
+        }
+
+        const result = await pool.query(
+            `INSERT INTO teacher_advisors(teacher_id, class_level, year, semester)
+             VALUES($1,$2,$3,$4)
+             ON CONFLICT (class_level, year, semester)
+             DO UPDATE SET teacher_id = EXCLUDED.teacher_id
+             RETURNING id`,
+            [teacher_id, class_level, year, semester]
+        );
+
+        res.json({ success: true, id: result.rows[0].id });
+    } catch (err) {
+        console.error("ERROR /director/advisors POST:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.delete("/advisors/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query("DELETE FROM teacher_advisors WHERE id=$1", [id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("ERROR /director/advisors DELETE:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 // SUBJECTS CRUD
+async function ensureSubjectColumns() {
+    await pool.query(`
+        ALTER TABLE subjects
+            ADD COLUMN IF NOT EXISTS name_th VARCHAR(255),
+            ADD COLUMN IF NOT EXISTS name_en VARCHAR(255),
+            ADD COLUMN IF NOT EXISTS subject_type VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS subject_group VARCHAR(100),
+            ADD COLUMN IF NOT EXISTS level VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS total_hours INTEGER,
+            ADD COLUMN IF NOT EXISTS description TEXT,
+            ADD COLUMN IF NOT EXISTS year INTEGER,
+            ADD COLUMN IF NOT EXISTS semester INTEGER
+    `);
+}
+
 router.get("/subjects", async (req, res) => {
     try {
+        await ensureSubjectColumns();
+        const { search, level, group, type, year, semester } = req.query;
+        const params = [];
+        const where = [];
+
+        if (search) {
+            params.push(`%${search}%`);
+            where.push(`(subject_code ILIKE $${params.length} OR name ILIKE $${params.length} OR name_th ILIKE $${params.length} OR name_en ILIKE $${params.length})`);
+        }
+        if (level) {
+            params.push(level);
+            where.push(`level = $${params.length}`);
+        }
+        if (group) {
+            params.push(group);
+            where.push(`subject_group = $${params.length}`);
+        }
+        if (type) {
+            params.push(type);
+            where.push(`subject_type = $${params.length}`);
+        }
+        if (year) {
+            params.push(Number(year));
+            where.push(`year = $${params.length}`);
+        }
+        if (semester) {
+            params.push(Number(semester));
+            where.push(`semester = $${params.length}`);
+        }
+
         const result = await pool.query(
-            `SELECT id, subject_code, name, credit FROM subjects ORDER BY subject_code ASC`
+            `SELECT id, subject_code, name, name_th, name_en, credit, total_hours, subject_type, subject_group, level, description, year, semester
+             FROM subjects
+             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+             ORDER BY subject_code ASC`,
+            params
         );
         res.json(result.rows);
     } catch (err) {
@@ -282,10 +468,14 @@ router.post("/subjects", async (req, res) => {
 router.put("/subjects/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const { subject_code, name, credit } = req.body;
+        await ensureSubjectColumns();
+        const { subject_code, name_th, name_en, subject_type, subject_group, level, credit, total_hours, description, year, semester } = req.body;
         await pool.query(
-            `UPDATE subjects SET subject_code=$1, name=$2, credit=$3 WHERE id=$4`,
-            [subject_code, name, credit, id]
+            `UPDATE subjects
+             SET subject_code=$1, name=$2, name_th=$3, name_en=$4, credit=$5, total_hours=$6,
+                 subject_type=$7, subject_group=$8, level=$9, description=$10, year=$11, semester=$12
+             WHERE id=$13`,
+            [subject_code, name_th, name_th, name_en || null, credit || 0, total_hours || 0, subject_type || null, subject_group || null, level || null, description || null, year || null, semester || null, id]
         );
         res.json({ success: true });
     } catch (err) {
@@ -308,17 +498,32 @@ router.delete("/subjects/:id", async (req, res) => {
 // SECTIONS / CURRICULUM
 router.get("/sections", async (req, res) => {
     try {
-        const { year, semester } = req.query;
+        const { year, semester, search } = req.query;
+        const params = [];
+        const where = [];
+
+        if (year) {
+            params.push(Number(year));
+            where.push(`ss.year = $${params.length}`);
+        }
+        if (semester) {
+            params.push(Number(semester));
+            where.push(`ss.semester = $${params.length}`);
+        }
+        if (search) {
+            params.push(`%${search}%`);
+            where.push(`s.subject_code ILIKE $${params.length}`);
+        }
+
         const result = await pool.query(
             `SELECT ss.*, s.subject_code, s.name AS subject_name,
                     t.first_name || ' ' || t.last_name AS teacher_name
              FROM subject_sections ss
              LEFT JOIN subjects s ON ss.subject_id = s.id
              LEFT JOIN teachers t ON ss.teacher_id = t.id
-             WHERE ($1::int IS NULL OR ss.year = $1)
-               AND ($2::int IS NULL OR ss.semester = $2)
+             ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
              ORDER BY ss.year DESC, ss.semester DESC, ss.id DESC`,
-            [year || null, semester || null]
+            params
         );
         res.json(result.rows);
     } catch (err) {
@@ -371,8 +576,18 @@ router.delete("/sections/:id", async (req, res) => {
 });
 
 // ACTIVITIES CRUD
+async function ensureActivityColumns() {
+    await pool.query(
+        "ALTER TABLE school_activities ADD COLUMN IF NOT EXISTS note TEXT"
+    );
+    await pool.query(
+        "ALTER TABLE school_activities ADD COLUMN IF NOT EXISTS category VARCHAR(50)"
+    );
+}
+
 router.get("/activities", async (req, res) => {
     try {
+        await ensureActivityColumns();
         const result = await pool.query(
             "SELECT * FROM school_activities ORDER BY date DESC, id DESC"
         );
@@ -385,11 +600,13 @@ router.get("/activities", async (req, res) => {
 
 router.post("/activities", async (req, res) => {
     try {
-        const { name, date, location } = req.body;
-        if (!name || !date) return res.status(400).json({ error: "ข้อมูลไม่ครบ" });
+        await ensureActivityColumns();
+        const { name, date, location, note, category } = req.body;
+        if (!name || !date) return res.status(400).json({ error: "????????????" });
         const result = await pool.query(
-            `INSERT INTO school_activities(name, date, location) VALUES($1,$2,$3) RETURNING id`,
-            [name, date, location || ""]
+            `INSERT INTO school_activities(name, date, location, note, category)
+             VALUES($1,$2,$3,$4,$5) RETURNING id`,
+            [name, date, location || "", note || "", category || ""]
         );
         res.json({ success: true, id: result.rows[0].id });
     } catch (err) {
@@ -401,11 +618,12 @@ router.post("/activities", async (req, res) => {
 router.put("/activities/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, date, location } = req.body;
-        if (!name || !date) return res.status(400).json({ error: "????????????????????????????????????" });
+        await ensureActivityColumns();
+        const { name, date, location, note, category } = req.body;
+        if (!name || !date) return res.status(400).json({ error: "????????????" });
         await pool.query(
-            `UPDATE school_activities SET name=$1, date=$2, location=$3 WHERE id=$4`,
-            [name, date, location || "", id]
+            `UPDATE school_activities SET name=$1, date=$2, location=$3, note=$4, category=$5 WHERE id=$6`,
+            [name, date, location || "", note || "", category || "", id]
         );
         res.json({ success: true });
     } catch (err) {
@@ -422,6 +640,224 @@ router.delete("/activities/:id", async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error("ERROR /director/activities DELETE:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// PROJECTS
+async function ensureProjectTable() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS projects (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            year INTEGER,
+            semester INTEGER,
+            objective TEXT,
+            department VARCHAR(150),
+            budget_total NUMERIC(12,2) DEFAULT 0,
+            budget_used NUMERIC(12,2) DEFAULT 0,
+            quantity_target INTEGER DEFAULT 0,
+            quantity_actual INTEGER DEFAULT 0,
+            quality_score INTEGER DEFAULT 0,
+            kpi_score INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+    `);
+}
+
+router.get("/projects", async (req, res) => {
+    try {
+        await ensureProjectTable();
+        const { year, semester } = req.query;
+        const params = [];
+        const where = [];
+        if (year) {
+            params.push(Number(year));
+            where.push(`year = $${params.length}`);
+        }
+        if (semester) {
+            params.push(Number(semester));
+            where.push(`semester = $${params.length}`);
+        }
+        const result = await pool.query(
+            `SELECT * FROM projects
+             ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
+             ORDER BY year DESC, semester DESC, id DESC`,
+            params
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("ERROR /director/projects GET:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.post("/projects", async (req, res) => {
+    try {
+        await ensureProjectTable();
+        const {
+            name,
+            year,
+            semester,
+            objective,
+            department,
+            budget_total,
+            budget_used,
+            quantity_target,
+            quantity_actual,
+            quality_score,
+            kpi_score
+        } = req.body;
+
+        if (!name) {
+            return res.status(400).json({ error: "กรุณาระบุชื่อโครงการ" });
+        }
+
+        const result = await pool.query(
+            `INSERT INTO projects
+             (name, year, semester, objective, department, budget_total, budget_used,
+              quantity_target, quantity_actual, quality_score, kpi_score)
+             VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+             RETURNING id`,
+            [
+                name,
+                year || null,
+                semester || null,
+                objective || "",
+                department || "",
+                budget_total || 0,
+                budget_used || 0,
+                quantity_target || 0,
+                quantity_actual || 0,
+                quality_score || 0,
+                kpi_score || 0
+            ]
+        );
+        res.json({ success: true, id: result.rows[0].id });
+    } catch (err) {
+        console.error("ERROR /director/projects POST:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.put("/projects/:id", async (req, res) => {
+    try {
+        await ensureProjectTable();
+        const { id } = req.params;
+        const {
+            name,
+            year,
+            semester,
+            objective,
+            department,
+            budget_total,
+            budget_used,
+            quantity_target,
+            quantity_actual,
+            quality_score,
+            kpi_score
+        } = req.body;
+
+        await pool.query(
+            `UPDATE projects
+             SET name=$1, year=$2, semester=$3, objective=$4, department=$5,
+                 budget_total=$6, budget_used=$7, quantity_target=$8, quantity_actual=$9,
+                 quality_score=$10, kpi_score=$11
+             WHERE id=$12`,
+            [
+                name,
+                year || null,
+                semester || null,
+                objective || "",
+                department || "",
+                budget_total || 0,
+                budget_used || 0,
+                quantity_target || 0,
+                quantity_actual || 0,
+                quality_score || 0,
+                kpi_score || 0,
+                id
+            ]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("ERROR /director/projects PUT:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.delete("/projects/:id", async (req, res) => {
+    try {
+        await ensureProjectTable();
+        const { id } = req.params;
+        await pool.query("DELETE FROM projects WHERE id=$1", [id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("ERROR /director/projects DELETE:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// DUTY TEACHERS
+async function ensureDutyTeacherTable() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS duty_teachers (
+            id SERIAL PRIMARY KEY,
+            week_start DATE NOT NULL,
+            teacher_id INTEGER NOT NULL REFERENCES teachers(id) ON DELETE CASCADE,
+            created_at TIMESTAMP DEFAULT NOW(),
+            UNIQUE (week_start, teacher_id)
+        )
+    `);
+}
+
+router.get("/duty-teachers", async (req, res) => {
+    try {
+        await ensureDutyTeacherTable();
+        const { week_start } = req.query;
+        if (!week_start) return res.json([]);
+        const result = await pool.query(
+            `SELECT dt.id, dt.week_start, dt.teacher_id,
+                    t.first_name || ' ' || t.last_name AS teacher_name
+             FROM duty_teachers dt
+             JOIN teachers t ON dt.teacher_id = t.id
+             WHERE dt.week_start = $1
+             ORDER BY t.first_name ASC`,
+            [week_start]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("ERROR /director/duty-teachers GET:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.post("/duty-teachers", async (req, res) => {
+    try {
+        await ensureDutyTeacherTable();
+        const { week_start, teacher_id } = req.body;
+        if (!week_start || !teacher_id) return res.status(400).json({ error: "????????????" });
+        const result = await pool.query(
+            `INSERT INTO duty_teachers(week_start, teacher_id)
+             VALUES($1,$2)
+             ON CONFLICT (week_start, teacher_id) DO NOTHING
+             RETURNING id`,
+            [week_start, teacher_id]
+        );
+        res.json({ success: true, id: result.rows[0]?.id || null });
+    } catch (err) {
+        console.error("ERROR /director/duty-teachers POST:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.delete("/duty-teachers/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query("DELETE FROM duty_teachers WHERE id=$1", [id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("ERROR /director/duty-teachers DELETE:", err);
         res.status(500).json({ error: "Server error" });
     }
 });
@@ -626,14 +1062,38 @@ router.delete("/finance/:id", async (req, res) => {
 router.get("/reports/student-count", async (req, res) => {
     try {
         const result = await pool.query(
-            `SELECT class_level, COALESCE(classroom, room) AS room, COUNT(*) AS total
+            `SELECT class_level, COALESCE(classroom, room) AS room, gender, COUNT(*) AS total
              FROM students
-             GROUP BY class_level, COALESCE(classroom, room)
+             GROUP BY class_level, COALESCE(classroom, room), gender
              ORDER BY class_level, room`
         );
         res.json(result.rows);
     } catch (err) {
         console.error("ERROR /director/reports/student-count:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// REPORTS: attendance summary (late/absent/leave)
+router.get("/reports/attendance-summary", async (req, res) => {
+    try {
+        const days = Math.max(1, Number(req.query.days || 5));
+        const result = await pool.query(
+            `SELECT
+                SUM(CASE WHEN status ILIKE 'สาย%' THEN 1 ELSE 0 END) AS late,
+                SUM(CASE WHEN status ILIKE 'ขาด%' THEN 1 ELSE 0 END) AS absent,
+                SUM(CASE WHEN status ILIKE 'ลา%' THEN 1 ELSE 0 END) AS leave
+             FROM teacher_attendance
+             WHERE date >= CURRENT_DATE - ($1::int - 1)`,
+            [days]
+        );
+        res.json({
+            late: Number(result.rows[0].late || 0),
+            absent: Number(result.rows[0].absent || 0),
+            leave: Number(result.rows[0].leave || 0)
+        });
+    } catch (err) {
+        console.error("ERROR /director/reports/attendance-summary:", err);
         res.status(500).json({ error: "Server error" });
     }
 });

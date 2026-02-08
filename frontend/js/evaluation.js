@@ -1,9 +1,11 @@
 ﻿import {
     requireLogin,
     qs,
-    loadCart,
+    loadRegistered,
     getCompetency,
-    submitEvaluation
+    submitEvaluation,
+    clearFieldErrors,
+    setFieldError
 } from "./app.js";
 
 let student;
@@ -44,8 +46,14 @@ async function loadStudentSubjects() {
 
     const select = qs("#subjectSelect");
     select.innerHTML = `<option value="">กำลังโหลด...</option>`;
-    const subjects = await loadCart(student.id, year, term);
+    const subjects = await loadRegistered(student.id, year, term);
     select.innerHTML = `<option disabled selected value="">-- กรุณาเลือกวิชา --</option>`;
+
+    if (!subjects.length) {
+        select.innerHTML = `<option disabled selected value="">ยังไม่มีรายวิชาที่บันทึกแล้ว</option>`;
+        resetTeacherCard();
+        return;
+    }
 
     subjects.forEach(sub => {
         const op = document.createElement("option");
@@ -73,7 +81,7 @@ async function selectSubject() {
         teacher_name: option.dataset.teacher
     };
 
-    qs("#teacherName").textContent = selectedSection.teacher_name;
+    qs("#teacherName").textContent = selectedSection.teacher_name || "-";
     qs("#subjectName").textContent = selectedSection.subject_name;
 
     await loadEvaluationStatus();
@@ -142,6 +150,7 @@ async function submitForm(event) {
 
     const year = qs("#evalYearSelect").value;
     const term = qs("#evalTermSelect").value;
+    const feedback = qs("#evalFeedback")?.value?.trim() || "";
 
     // รวมคะแนน
     const data = questions.map((q, i) => ({
@@ -149,7 +158,7 @@ async function submitForm(event) {
         score: Number(document.querySelector(`input[name="q${i}"]:checked`).value)
     }));
 
-    await submitEvaluation(student.id, data, year, term);
+    await submitEvaluation(student.id, data, year, term, selectedSection?.id || null, feedback);
 
     alert("ส่งแบบประเมินสำเร็จ");
     await loadEvaluationStatus();

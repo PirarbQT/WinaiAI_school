@@ -37,13 +37,13 @@
     </aside>
 
     <main class="main-wrapper student-page">
-        <section class="student-hero">
+        <section class="student-hero transcript-hero">
             <div>
                 <div class="student-kicker">Transcript</div>
                 <h1 class="student-title">ผลการเรียนสะสม</h1>
-                <p class="student-subtitle">ดูผลการเรียนรายวิชาและสรุปเกรดของคุณ</p>
+                <p class="student-subtitle">สรุปผลการเรียนรายวิชาและเกรดเฉลี่ยในแต่ละภาคเรียน</p>
             </div>
-            <div class="student-hero-cards">
+            <div class="student-hero-cards transcript-hero-cards">
                 <div class="student-hero-card">
                     <div class="student-hero-label">ชื่อ - นามสกุล</div>
                     <div class="student-hero-value" id="studentName">-</div>
@@ -52,29 +52,26 @@
                     <div class="student-hero-label">เลขประจำตัว</div>
                     <div class="student-hero-value" id="studentCode">-</div>
                 </div>
-            </div>
-        </section>
-
-        <section class="student-section">
-            <div class="student-section-head">
-                <h3><i class="fa-solid fa-filter"></i> เลือกปีการศึกษาและภาคเรียน</h3>
-                <span class="student-pill">ปรับมุมมองคะแนน</span>
-            </div>
-            <div class="student-grid">
-                <div>
-                    <label>ปีการศึกษา</label>
+                <div class="student-hero-card">
+                    <div class="student-hero-label">ปีการศึกษา</div>
                     <select class="custom-select" id="gradeYearSelect">
                         <option value="2568">2568</option>
+                        <option value="2567">2567</option>
+                        <option value="2566">2566</option>
                     </select>
                 </div>
-                <div>
-                    <label>ภาคเรียน</label>
+                <div class="student-hero-card">
+                    <div class="student-hero-label">ภาคเรียน</div>
                     <select class="custom-select" id="gradeTermSelect">
                         <option value="1">1</option>
                         <option value="2">2</option>
                     </select>
                 </div>
-                <div class="student-note">ระบบจะแสดงผลตามปี/เทอมที่เลือกทันที</div>
+                <div class="student-hero-card transcript-action-card">
+                    <button class="btn-outline" id="printTranscriptBtn">
+                        <i class="fa-solid fa-print"></i> พิมพ์รายงาน
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -84,7 +81,7 @@
                 <span class="student-pill">Transcript</span>
             </div>
             <div class="schedule-table-container">
-                <table class="student-table">
+                <table class="student-table transcript-table">
                     <thead>
                         <tr>
                             <th>รหัสวิชา</th>
@@ -92,11 +89,12 @@
                             <th class="center">หน่วยกิต</th>
                             <th class="center">คะแนนรวม</th>
                             <th class="center">เกรด</th>
+                            <th class="center">สถานะ</th>
                         </tr>
                     </thead>
                     <tbody id="gradeTableBody">
                         <tr>
-                            <td colspan="5" class="center">กำลังโหลด...</td>
+                            <td colspan="6" class="center">กำลังโหลด...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -108,22 +106,23 @@
                 <h3><i class="fa-solid fa-calculator"></i> สรุปเกรดเทอมนี้</h3>
                 <span class="student-pill">ภาพรวม</span>
             </div>
-            <div class="student-grid">
-                <div class="student-stat">
-                    <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
-                    <div>
-                        <div class="stat-label">จำนวนหน่วยกิต</div>
-                        <div class="stat-value" id="sumCredit">0</div>
-                    </div>
+            <div class="transcript-summary">
+                <div class="summary-card accent-navy">
+                    <div class="summary-label">หน่วยกิตเทอมนี้</div>
+                    <div class="summary-value" id="termCredit">0.0</div>
                 </div>
-                <div class="student-stat">
-                    <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>
-                    <div>
-                        <div class="stat-label">GPA</div>
-                        <div class="stat-value" id="gpaValue">0.00</div>
-                    </div>
+                <div class="summary-card accent-purple">
+                    <div class="summary-label">หน่วยกิตสะสม</div>
+                    <div class="summary-value" id="totalCredit">0.0</div>
                 </div>
-                <div class="student-note">เกรดเฉลี่ยคำนวณจากรายวิชาในภาคเรียนที่เลือก</div>
+                <div class="summary-card accent-green">
+                    <div class="summary-label">เกรดเฉลี่ย (GPA)</div>
+                    <div class="summary-value" id="gpaValue">0.00</div>
+                </div>
+                <div class="summary-card accent-brown">
+                    <div class="summary-label">เกรดเฉลี่ยสะสม (GPAX)</div>
+                    <div class="summary-value" id="gpaxValue">0.00</div>
+                </div>
             </div>
         </section>
     </main>

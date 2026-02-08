@@ -1,43 +1,29 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบผู้อำนวยการ</title>
+    <title>เข้าสู่ระบบผู้อำนวยการ - WinAI School</title>
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        window.location.replace("../login.html");
-    </script>
 </head>
-<body class="student-login">
-
-    <div class="student-login-card">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <div class="stat-icon" style="width:48px; height:48px; border-radius:14px; background:rgba(15,118,110,0.12);">
-                <i class="fa-solid fa-chart-pie" style="color:#0f766e;"></i>
-            </div>
-            <div>
-                <div class="student-kicker">Director Portal</div>
+<body>
+    <div class="login-page">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon"><i class="fa-solid fa-chart-pie"></i></div>
                 <h2>เข้าสู่ระบบผู้อำนวยการ</h2>
+                <p>เลือกบทบาทก่อนเข้าสู่ระบบ</p>
+            </div>
+            <div class="login-form">
+                <label>รหัสครู</label>
+                <input type="text" id="loginDirectorCode" placeholder="D001">
+                <label>รหัสผ่าน</label>
+                <input type="password" id="loginDirectorPass" placeholder="">
+                <button class="btn-primary" id="directorLoginBtn" onclick="loginDirector()">เข้าสู่ระบบ</button>
             </div>
         </div>
-        <p>WinAI School</p>
-
-        <div class="login-form">
-            <label>รหัสผู้อำนวยการ</label>
-            <input type="text" id="loginDirectorCode" placeholder="เช่น D001">
-
-            <label>รหัสผ่าน</label>
-            <input type="password" id="loginDirectorPass" placeholder="กรอกรหัสผ่าน">
-
-            <button class="btn-login" onclick="loginDirector()">เข้าสู่ระบบ</button>
-        </div>
-
-        <p class="login-footer">© 2025 WinAI School Portal</p>
     </div>
-
     <script type="module" src="../../js/director_auth.js"></script>
-
 </body>
 </html>

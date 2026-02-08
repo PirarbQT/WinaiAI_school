@@ -1,93 +1,71 @@
-import {
-    requireLogin,
-    qs,
-    loadGrades
-} from "./app.js";
+import { requireLogin, qs, loadGrades } from "./app.js";
 
 let student;
 
 const demoGrades = [
-    { subject_code: "SCI102", subject: "??????????????????", credit: 1.5, total: 78, grade: "B+" },
-    { subject_code: "MATH101", subject: "?????????????????", credit: 1.0, total: 72, grade: "B" },
-    { subject_code: "ENG102", subject: "??????????", credit: 1.0, total: 80, grade: "A" },
-    { subject_code: "SOC101", subject: "??????????", credit: 1.0, total: 74, grade: "B" },
-    { subject_code: "THAI101", subject: "???????", credit: 1.0, total: 85, grade: "A" }
+    { subject_code: "TH1101", subject: "ภาษาไทยพื้นฐาน 1", credit: 1, total: 78, grade: "B+" },
+    { subject_code: "MA1101", subject: "คณิตศาสตร์พื้นฐาน 1", credit: 1.5, total: 65, grade: "C+" },
+    { subject_code: "SC1101", subject: "วิทยาศาสตร์พื้นฐาน 1", credit: 1.5, total: 70, grade: "B" },
+    { subject_code: "EN1101", subject: "ภาษาอังกฤษพื้นฐาน 1", credit: 1, total: 89, grade: "A" },
+    { subject_code: "SO1101", subject: "สังคมศึกษา 1", credit: 1, total: 82, grade: "A" }
 ];
 
-// เมื่อหน้าโหลด
 window.onload = async () => {
     student = requireLogin();
 
-    // set student info
     qs("#studentName").textContent = `${student.first_name} ${student.last_name}`;
     qs("#studentCode").textContent = student.student_code;
 
     qs("#gradeYearSelect").addEventListener("change", refresh);
     qs("#gradeTermSelect").addEventListener("change", refresh);
 
+    const printBtn = qs("#printTranscriptBtn");
+    if (printBtn) printBtn.addEventListener("click", () => window.print());
+
     await refresh();
 };
 
-// โหลดข้อมูลผลการเรียน
 async function refresh() {
-
     const year = qs("#gradeYearSelect").value;
     const semester = qs("#gradeTermSelect").value;
     const body = qs("#gradeTableBody");
 
-    body.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#777;">กำลังโหลด...</td></tr>`;
+    body.innerHTML = `<tr><td colspan="6" class="center">กำลังโหลด...</td></tr>`;
     const rows = await loadGrades(student.id, year, semester);
 
-    if (rows.length === 0) {
+    if (!rows || rows.length === 0) {
         renderRows(demoGrades);
         updateGPA(demoGrades);
         return;
     }
 
-    body.innerHTML = "";
-
     renderRows(rows);
+    updateGPA(rows);
+}
 
-    (r => {
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td>${r.subject_code ?? "-"}</td>
-            <td style="text-align:left; padding-left:20px;">${r.subject}</td>
-            <td>${r.credit ?? "-"}</td>
-            <td>${r.total ?? "-"}</td>
-            <td>${r.grade ?? "-"}</td>
-            <td>${r.grade ? "สำเร็จ" : "-"}</td>
-        `;
-
-        body.appendChild(tr);
-    });
-
-    function renderRows(rows) {
+function renderRows(rows) {
     const body = qs("#gradeTableBody");
     body.innerHTML = "";
 
     rows.forEach(r => {
         const tr = document.createElement("tr");
+        const statusLabel = r.grade ? "ผ่าน" : "รอผล";
+        const statusClass = r.grade ? "status-pass" : "status-pending";
 
         tr.innerHTML = `
             <td>${r.subject_code ?? "-"}</td>
-            <td style="text-align:left; padding-left:20px;">${r.subject}</td>
-            <td>${r.credit ?? "-"}</td>
-            <td>${r.total ?? "-"}</td>
-            <td>${r.grade ?? "-"}</td>
+            <td style="text-align:left; padding-left:16px;">${r.subject ?? "-"}</td>
+            <td class="center">${r.credit ?? "-"}</td>
+            <td class="center">${r.total ?? "-"}</td>
+            <td class="center">${r.grade ?? "-"}</td>
+            <td class="center"><span class="status-pill ${statusClass}">${statusLabel}</span></td>
         `;
 
         body.appendChild(tr);
     });
 }
 
-updateGPA(rows);
-}
-
-// คำนวณ GPA
 function updateGPA(rows) {
-
     const gradeMap = {
         "A": 4, "B+": 3.5, "B": 3,
         "C+": 2.5, "C": 2,
@@ -99,7 +77,7 @@ function updateGPA(rows) {
     let totalPoints = 0;
 
     rows.forEach(r => {
-        const credit = r.credit ?? 1;
+        const credit = Number(r.credit ?? 1);
         const gp = gradeMap[r.grade];
 
         if (gp !== undefined) {
@@ -110,7 +88,8 @@ function updateGPA(rows) {
 
     const gpa = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
 
-    // แสดงผล
-    qs("#sumCredit").textContent = totalCredits;
+    qs("#termCredit").textContent = totalCredits.toFixed(1);
+    qs("#totalCredit").textContent = totalCredits.toFixed(1);
     qs("#gpaValue").textContent = gpa.toFixed(2);
+    qs("#gpaxValue").textContent = gpa.toFixed(2);
 }

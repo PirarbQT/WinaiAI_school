@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ปฏิทิน</title>
+    <title>ปฏิทินกิจกรรม</title>
 
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,7 +11,6 @@
 
 <body>
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="logo-section">
             <div class="logo-icon" data-avatar-role="teacher"><i class="fa-solid fa-chalkboard-user"></i></div>
@@ -20,13 +19,17 @@
                 <span>ครู</span>
             </div>
         </div>
-<ul class="menu-list">
+        <ul class="menu-list">
             <li><a href="dashboard.html" class="menu-item"><i class="fa-solid fa-home"></i> แดชบอร์ด</a></li>
             <li><a href="students.html" class="menu-item"><i class="fa-solid fa-users"></i> รายชื่อนักเรียน</a></li>
             <li><a href="attendance.html" class="menu-item"><i class="fa-solid fa-calendar-check"></i> เช็คชื่อ</a></li>
             <li><a href="scores.html" class="menu-item"><i class="fa-solid fa-pen-nib"></i> กรอกคะแนน</a></li>
             <li><a href="grade_cut.html" class="menu-item"><i class="fa-solid fa-scissors"></i> ตัดเกรด</a></li>
+            <li><a href="teaching_evaluation.html" class="menu-item"><i class="fa-solid fa-chart-line"></i> ผลประเมินการสอน</a></li>
+            <li><a href="advisor_evaluation.html" class="menu-item"><i class="fa-solid fa-user-check"></i> ประเมินนักเรียน</a></li>
+            <li><a href="fitness.html" class="menu-item"><i class="fa-solid fa-dumbbell"></i> ทดสอบสมรรถนะ</a></li>
             <li><a href="calendar.html" class="menu-item active"><i class="fa-solid fa-calendar-days"></i> ปฏิทิน</a></li>
+            <li><a href="exam_calendar.html" class="menu-item"><i class="fa-solid fa-clipboard-list"></i> ตารางสอบ</a></li>
         </ul>
 
         <div class="logout-btn" onclick="logoutTeacher()">
@@ -34,36 +37,84 @@
         </div>
     </aside>
 
-    <!-- MAIN -->
     <main class="main-wrapper teacher-page calendar-page">
 
         <section class="calendar-hero">
             <div>
-                <div class="calendar-kicker">Schedule</div>
-                <h1 class="calendar-title">ปฏิทิน</h1>
-                <p class="calendar-subtitle">เพิ่มกิจกรรมใหม่และติดตามกิจกรรมที่กำลังจะมาถึง</p>
+                <div class="calendar-kicker">Activity Calendar</div>
+                <h1 class="calendar-title">ปฏิทินกิจกรรม</h1>
+                <p class="calendar-subtitle">จัดการและติดตามกิจกรรมโรงเรียนได้ในมุมมองปฏิทิน</p>
             </div>
             <div class="calendar-hero-card">
                 <div class="calendar-hero-label">สถานะ</div>
-                <div class="calendar-hero-value">พร้อมจัดการกิจกรรม</div>
+                <div class="calendar-hero-value">พร้อมจัดการ</div>
             </div>
         </section>
 
-        <section class="calendar-grid">
-            <div class="calendar-card">
-                <h3>เพิ่มกิจกรรม</h3>
-                <button id="openEventModalBtn" class="btn-primary" style="margin-top:10px;">
-                    เพิ่มกิจกรรม
-                </button>
+        <section class="teacher-calendar-layout">
+            <div class="teacher-calendar-main">
+                <div class="teacher-calendar-filters">
+                    <button class="calendar-chip active" data-filter="all">ทั้งหมด</button>
+                    <button class="calendar-chip" data-filter="internal">กิจกรรมภายใน</button>
+                    <button class="calendar-chip" data-filter="academic">วิชาการ</button>
+                    <button class="calendar-chip" data-filter="holiday">วันหยุด</button>
+                    <button class="calendar-chip" data-filter="meeting">การประชุม</button>
+                </div>
+
+                <div class="teacher-calendar-card">
+                    <div class="teacher-calendar-toolbar">
+                        <div class="toolbar-left">
+                            <button class="btn-outline btn-sm" id="calendarPrevBtn"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button class="btn-outline btn-sm" id="calendarTodayBtn">วันนี้</button>
+                            <button class="btn-outline btn-sm" id="calendarNextBtn"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="toolbar-center" id="calendarMonthLabel">-</div>
+                        <div class="toolbar-right">
+                            <button class="btn-outline btn-sm">เดือน</button>
+                            <button class="btn-outline btn-sm ghost">สัปดาห์</button>
+                        </div>
+                    </div>
+
+                    <div class="teacher-calendar-table-wrap">
+                        <table class="teacher-calendar-table">
+                            <thead>
+                                <tr>
+                                    <th>อา.</th>
+                                    <th>จ.</th>
+                                    <th>อ.</th>
+                                    <th>พ.</th>
+                                    <th>พฤ.</th>
+                                    <th>ศ.</th>
+                                    <th>ส.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calendarBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="calendar-list-card">
-                <div class="calendar-list-header">
-                    <h3>รายการกิจกรรม</h3>
-                    <span class="calendar-pill">จัดเรียงตามวันที่</span>
+            <aside class="teacher-calendar-side">
+                <div class="calendar-side-card">
+                    <div class="calendar-side-header">
+                        <h3><i class="fa-solid fa-clock"></i> กิจกรรมที่กำลังจะมาถึง</h3>
+                    </div>
+                    <div id="upcomingList" class="calendar-upcoming"></div>
+                    <button id="openEventModalBtn" class="btn-primary btn-block">เพิ่มกิจกรรม</button>
                 </div>
-                <div id="eventList" class="event-list"></div>
-            </div>
+
+                <div class="calendar-side-card legend-card">
+                    <div class="calendar-side-header">
+                        <h3><i class="fa-solid fa-circle-info"></i> คำอธิบายสี</h3>
+                    </div>
+                    <ul class="calendar-legend">
+                        <li><span class="legend-dot legend-holiday"></span> วันหยุด</li>
+                        <li><span class="legend-dot legend-academic"></span> วิชาการ/สอบ</li>
+                        <li><span class="legend-dot legend-meeting"></span> การประชุม</li>
+                        <li><span class="legend-dot legend-other"></span> กิจกรรมทั่วไป</li>
+                    </ul>
+                </div>
+            </aside>
         </section>
 
     </main>
@@ -75,18 +126,42 @@
                 <h3>เพิ่มกิจกรรม</h3>
                 <button class="modal-close" data-modal-close="eventModal">×</button>
             </div>
-            <label>ชื่อกิจกรรม</label>
-            <input type="text" id="eventTitle">
+            <div class="calendar-form-grid">
+                <div class="calendar-form-row">
+                    <div class="calendar-form-field">
+                        <label>ประเภทกิจกรรม</label>
+                        <div class="calendar-input-wrap">
+                            <select id="eventCategory">
+                                <option value="internal" selected>กิจกรรมภายใน</option>
+                                <option value="academic">วิชาการ</option>
+                                <option value="holiday">วันหยุด</option>
+                                <option value="meeting">การประชุม</option>
+                                <option value="other">กิจกรรมทั่วไป</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="calendar-form-field">
+                        <label>วันที่จัดกิจกรรม</label>
+                        <div class="calendar-input-wrap">
+                            <input type="date" id="eventDate">
+                        </div>
+                    </div>
+                </div>
 
-            <label>รายละเอียด</label>
-            <textarea id="eventDetail"></textarea>
+                <div class="calendar-form-field">
+                    <label>ชื่อกิจกรรม</label>
+                    <input type="text" id="eventTitle" placeholder="เช่น กิจกรรมวันวิทยาศาสตร์">
+                </div>
 
-            <label>วันที่จัดกิจกรรม</label>
-            <input type="date" id="eventDate">
+                <div class="calendar-form-field">
+                    <label>รายละเอียด</label>
+                    <textarea id="eventDetail" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+                </div>
+            </div>
 
-            <button id="addEventBtn" class="btn-primary" style="margin-top:15px;">
-                เพิ่มกิจกรรม
-            </button>
+            <div class="calendar-form-actions">
+                <button id="addEventBtn" class="btn-primary">เพิ่มกิจกรรม</button>
+            </div>
         </div>
     </div>
 
@@ -95,5 +170,3 @@
 
 </body>
 </html>
-
-

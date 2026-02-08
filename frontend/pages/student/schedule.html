@@ -53,6 +53,10 @@
                     <div class="student-hero-label">จำนวนสอบ</div>
                     <div class="student-hero-value" id="examCount">0</div>
                 </div>
+                <div class="student-hero-card">
+                    <div class="student-hero-label">ครูที่ปรึกษา</div>
+                    <div class="student-hero-value" id="scheduleAdvisor">-</div>
+                </div>
             </div>
         </section>
 
@@ -83,6 +87,11 @@
                         <i class="fa-solid fa-file-pen"></i> ตารางสอบ
                     </button>
                 </div>
+                <div class="student-tabs exam-type-tabs" id="examTypeTabs" style="display:none;">
+                    <button id="btn-exam-all" class="tab-btn active">ทั้งหมด</button>
+                    <button id="btn-exam-mid" class="tab-btn">กลางภาค</button>
+                    <button id="btn-exam-final" class="tab-btn">ปลายภาค</button>
+                </div>
             </div>
         </section>
 
@@ -92,18 +101,10 @@
                     <h3>ตารางเรียน</h3>
                     <span class="student-pill">อัปเดตล่าสุด</span>
                 </div>
-                <div class="schedule-container">
-                    <table class="student-table">
-                        <thead>
-                            <tr>
-                                <th>วัน</th>
-                                <th>เวลา</th>
-                                <th>รหัสวิชา</th>
-                                <th>ชื่อวิชา</th>
-                                <th>ผู้สอน</th>
-                            </tr>
-                        </thead>
-                        <tbody id="classTableBody"></tbody>
+                <div class="schedule-grid-container">
+                    <table class="schedule-grid" id="classGridTable">
+                        <thead id="classGridHead"></thead>
+                        <tbody id="classGridBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -113,18 +114,24 @@
                     <h3>ตารางสอบ</h3>
                     <span class="student-pill">กำหนดการสอบ</span>
                 </div>
-                <table class="student-table">
-                    <thead>
-                        <tr>
-                            <th>วันที่สอบ</th>
-                            <th>เวลา</th>
-                            <th>รหัสวิชา</th>
-                            <th>ชื่อวิชา</th>
-                            <th>ห้องสอบ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="examTableBody"></tbody>
-                </table>
+                <div class="table-container">
+                    <table class="student-table exam-list-table">
+                        <thead>
+                            <tr>
+                                <th>รหัสวิชา</th>
+                                <th>ชื่อรายวิชา</th>
+                                <th class="center">กลุ่ม</th>
+                                <th class="center">สอบกลางภาค</th>
+                                <th class="center">สอบปลายภาค</th>
+                            </tr>
+                        </thead>
+                        <tbody id="examListBody">
+                            <tr>
+                                <td colspan="5" class="center">กำลังโหลด...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </main>

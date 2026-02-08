@@ -25,8 +25,8 @@ function buildFilterQuery(useFilter) {
     const level = qs("#classLevelFilter")?.value || "";
     const room = qs("#roomFilter")?.value || "";
     let query = "";
-    if (level && level !== "???????") query += `&class_level=${encodeURIComponent(level)}`;
-    if (room && room !== "???????") query += `&room=${encodeURIComponent(room)}`;
+    if (level && level !== "All") query += `&class_level=${encodeURIComponent(level)}`;
+    if (room && room !== "All") query += `&room=${encodeURIComponent(room)}`;
     return query;
 }
 

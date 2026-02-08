@@ -11,6 +11,7 @@ window.onload = async () => {
         resetForm();
         openModal("sectionModal");
     });
+    qs("#searchSectionBtn").addEventListener("click", () => loadSections());
     qs("#saveSectionBtn").addEventListener("click", saveSection);
     qs("#resetSectionBtn").addEventListener("click", () => {
         resetForm();
@@ -41,8 +42,17 @@ async function loadRefs() {
 }
 
 async function loadSections() {
-    const res = await fetch(`${API_BASE}/director/sections`);
+    const keyword = qs("#sectionSearch")?.value.trim() || "";
+    const params = new URLSearchParams();
+    if (keyword) params.set("search", keyword);
+    const res = await fetch(`${API_BASE}/director/sections?${params.toString()}`);
     sections = await res.json();
+    if (keyword) {
+        const needle = keyword.toLowerCase();
+        sections = sections.filter((s) =>
+            String(s.subject_code || "").toLowerCase().includes(needle)
+        );
+    }
     renderSections();
 }
 

@@ -43,20 +43,17 @@
                 <h1 class="student-title">ลงทะเบียนรายวิชา</h1>
                 <p class="student-subtitle">ค้นหาและจัดการตะกร้ารายวิชาในที่เดียว</p>
             </div>
-            <div class="student-hero-cards">
+                        <div class="student-hero-cards">
                 <div class="student-hero-card">
-                    <div class="student-hero-label">ปีการศึกษา</div>
-                    <div class="student-hero-value" id="regHeroYear">-</div>
+                    <div class="student-hero-label">ครูที่ปรึกษา</div>
+                    <div class="student-hero-value" id="regHeroAdvisor">-</div>
                 </div>
                 <div class="student-hero-card">
-                    <div class="student-hero-label">ภาคเรียน</div>
-                    <div class="student-hero-value" id="regHeroTerm">-</div>
-                </div>
-                <div class="student-hero-card">
-                    <div class="student-hero-label">รายวิชาในตะกร้า</div>
+                    <div class="student-hero-label">จำนวนวิชาที่เลือก</div>
                     <div class="student-hero-value" id="regHeroCount">0</div>
                 </div>
             </div>
+</div>
         </section>
 
         <section class="student-section">
@@ -101,6 +98,11 @@
                 <h3><i class="fas fa-shopping-basket"></i> รายวิชาที่เลือกไว้</h3>
                 <span class="student-pill">จัดการตะกร้ารายวิชา</span>
             </div>
+            <div class="student-actions" style="margin-bottom: 12px;">
+                <button class="btn-primary" id="confirmRegistrationBtn">
+                    <i class="fa-solid fa-floppy-disk"></i> บันทึกรายวิชาที่เลือก
+                </button>
+            </div>
             <div class="table-container">
                 <table class="student-table">
                     <thead>
@@ -115,6 +117,30 @@
                     <tbody id="cartItems">
                         <tr>
                             <td colspan="5" class="center">กำลังโหลด...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fas fa-clipboard-check"></i> รายวิชาที่บันทึกแล้ว</h3>
+                <span class="student-pill">รายการที่ลงทะเบียนสำเร็จ</span>
+            </div>
+            <div class="table-container">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>รหัสวิชา</th>
+                            <th>ชื่อรายวิชา</th>
+                            <th class="center">หน่วยกิต</th>
+                            <th>วัน/เวลา</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registeredItems">
+                        <tr>
+                            <td colspan="4" class="center">กำลังโหลด...</td>
                         </tr>
                     </tbody>
                 </table>

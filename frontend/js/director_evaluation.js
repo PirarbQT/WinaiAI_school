@@ -19,21 +19,23 @@ window.onload = async () => {
     qs("#openStudentEvalModalBtn").addEventListener("click", () => {
         openModal("studentEvalModal");
     });
-    qs("#openTopicModalBtn").addEventListener("click", () => {
+    qs("#openTopicModalBtn").addEventListener("click", async () => {
         openModal("topicModal");
+        await loadTopics();
     });
 
     qs("#loadStudentEvalBtn").addEventListener("click", loadStudentEvaluation);
     qs("#addEvalRowBtn").addEventListener("click", addStudentEvalRow);
     qs("#saveStudentEvalBtn").addEventListener("click", saveStudentEvaluation);
+    qs("#evalStudentSelect").addEventListener("change", loadStudentEvaluation);
 
-    qs("#reloadTopicsBtn").addEventListener("click", loadTopics);
     qs("#evalTopicBody").addEventListener("click", handleTopicActions);
     qs("#evalStudentBody").addEventListener("click", handleStudentRowActions);
 
     await loadStudents();
     await loadEvaluation();
     await loadTopics();
+    await loadStudentEvaluation();
 };
 
 function getFilters() {
@@ -208,7 +210,6 @@ async function saveStudentEvaluation() {
 
     const studentId = qs("#evalStudentSelect").value;
     const { year, semester } = getFilters();
-    const password = qs("#evalPassword").value.trim();
     const directorCode = getDirectorCode();
 
     if (!studentId) {
@@ -220,10 +221,8 @@ async function saveStudentEvaluation() {
         return;
     }
 
-    if (!password) {
-        alert("กรุณากรอกรหัสผ่านผู้อำนวยการ");
-        return;
-    }
+    const password = window.prompt("กรอกรหัสผ่านผู้อำนวยการเพื่อบันทึก");
+    if (!password) return;
 
     const rows = Array.from(qs("#evalStudentBody").querySelectorAll("tr"));
     const payload = [];
@@ -235,14 +234,18 @@ async function saveStudentEvaluation() {
         const name = nameInput?.value.trim();
         const scoreValue = scoreInput?.value.trim();
 
+        if (!name && scoreValue === "") {
+            return;
+        }
+
         if (!name) {
-            setFieldError(nameInput, "กรุณากรอกหัวข้อ");
+            setFieldError(nameInput, "???????????????");
             hasError = true;
             return;
         }
 
         if (scoreValue === "") {
-            setFieldError(scoreInput, "กรุณากรอกคะแนน");
+            setFieldError(scoreInput, "??????????????");
             hasError = true;
             return;
         }
@@ -282,14 +285,11 @@ async function handleTopicActions(e) {
 
     const action = btn.dataset.action;
     const name = btn.dataset.name;
-    const password = qs("#topicPassword").value.trim();
+    const password = window.prompt("กรอกรหัสผ่านผู้อำนวยการเพื่อยืนยัน");
     const { year, semester } = getFilters();
     const directorCode = getDirectorCode();
 
-    if (!password) {
-        alert("กรุณากรอกรหัสผ่านผู้อำนวยการ");
-        return;
-    }
+    if (!password) return;
     if (!year || !semester) {
         alert("กรุณาระบุปีการศึกษาและภาคเรียน");
         return;

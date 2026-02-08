@@ -70,13 +70,30 @@
                         <option value="2">2</option>
                     </select>
                 </div>
+                <div>
+                    <label>รายวิชา</label>
+                    <select class="custom-select" id="lrSubjectSelect">
+                        <option value="">กำลังโหลด...</option>
+                    </select>
+                </div>
                 <div class="student-note">ผลประเมินจะแสดงทันทีเมื่อเลือกปีและเทอม</div>
             </div>
         </section>
 
         <section class="student-section">
             <div class="student-section-head">
-                <h3><i class="fa-solid fa-chart-line"></i> สรุปสมรรถนะ</h3>
+                <h3><i class="fa-solid fa-book-open"></i> ผลประเมินรายวิชา</h3>
+                <span class="student-pill">จากครูผู้สอน</span>
+            </div>
+            <div class="student-grid" style="margin-bottom: 12px;">
+                <div class="student-note" id="lrTeacherName">ครูผู้สอน: -</div>
+            </div>
+            <div id="subjectResultsContainer"></div>
+        </section>
+
+        <section class="student-section">
+            <div class="student-section-head">
+                <h3><i class="fa-solid fa-chart-line"></i> ผลประเมิณโดยรวม(ครูที่ปรึกษา)</h3>
                 <span class="student-pill">ผลรายด้าน</span>
             </div>
             <div id="resultsContainer"></div>
