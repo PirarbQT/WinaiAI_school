@@ -1,5 +1,5 @@
 import { API_BASE, FILE_BASE } from "./config.js";
-﻿import { qs, getStudent, clearFieldErrors, setFieldError } from "./app.js";
+import { qs, getStudent, clearFieldErrors, setFieldError } from "./app.js";
 
 const AUTH_BASE = `${API_BASE}/auth`;
 

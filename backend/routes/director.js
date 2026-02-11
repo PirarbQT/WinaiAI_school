@@ -1,4 +1,4 @@
-import express from "express";
+﻿import express from "express";
 import pool from "../db/pool.js";
 import bcrypt from "bcryptjs";
 
@@ -6,7 +6,7 @@ const router = express.Router();
 
 async function verifyDirectorPassword(director_code, password) {
     if (!director_code || !password) {
-        return { ok: false, status: 400, message: "กรุณากรอกรหัสผู้อำนวยการ" };
+        return { ok: false, status: 400, message: "à¸à¸£à¸¸à¸“à¸²à¸à¸£à¸­à¸à¸£à¸«à¸±à¸ªà¸œà¸¹à¹‰à¸­à¸³à¸™à¸§à¸¢à¸à¸²à¸£" };
     }
 
     const result = await pool.query(
@@ -14,12 +14,12 @@ async function verifyDirectorPassword(director_code, password) {
         [director_code]
     );
     if (result.rows.length === 0) {
-        return { ok: false, status: 400, message: "ไม่พบรหัสผู้อำนวยการ" };
+        return { ok: false, status: 400, message: "à¹„à¸¡à¹ˆà¸žà¸šà¸£à¸«à¸±à¸ªà¸œà¸¹à¹‰à¸­à¸³à¸™à¸§à¸¢à¸à¸²à¸£" };
     }
 
     const valid = await bcrypt.compare(password, result.rows[0].password_hash);
     if (!valid) {
-        return { ok: false, status: 401, message: "รหัสผ่านไม่ถูกต้อง" };
+        return { ok: false, status: 401, message: "à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡" };
     }
 
     return { ok: true };
@@ -74,8 +74,8 @@ router.get("/summary", async (req, res) => {
         );
         const gender = await pool.query(
             `SELECT
-                SUM(CASE WHEN gender ILIKE 'ชาย%' OR gender ILIKE 'male%' OR gender ILIKE 'm' THEN 1 ELSE 0 END) AS male,
-                SUM(CASE WHEN gender ILIKE 'หญิง%' OR gender ILIKE 'female%' OR gender ILIKE 'f' THEN 1 ELSE 0 END) AS female
+                SUM(CASE WHEN gender ILIKE 'à¸Šà¸²à¸¢%' OR gender ILIKE 'male%' OR gender ILIKE 'm' THEN 1 ELSE 0 END) AS male,
+                SUM(CASE WHEN gender ILIKE 'à¸«à¸à¸´à¸‡%' OR gender ILIKE 'female%' OR gender ILIKE 'f' THEN 1 ELSE 0 END) AS female
              FROM students`
         );
 
@@ -140,7 +140,7 @@ router.post("/students", async (req, res) => {
     try {
         await ensureStudentProfileColumns();
         const { student_code, first_name, last_name, class_level, classroom, room, password, prefix, gender, status, birthday, phone, address, parent_name, parent_phone, photo_url } = req.body;
-        if (!student_code) return res.status(400).json({ error: "กรุณากรอกรหัสนักเรียน" });
+        if (!student_code) return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸à¸£à¸­à¸à¸£à¸«à¸±à¸ªà¸™à¸±à¸à¹€à¸£à¸µà¸¢à¸™" });
         const pass = password || "1234";
         const hash = await bcrypt.hash(pass, 10);
 
@@ -215,7 +215,7 @@ router.delete("/students/:id", async (req, res) => {
     } catch (err) {
         await client.query("ROLLBACK");
         console.error("ERROR /director/students DELETE:", err);
-        res.status(500).json({ error: "ไม่สามารถลบนักเรียนได้" });
+        res.status(500).json({ error: "à¹„à¸¡à¹ˆà¸ªà¸²à¸¡à¸²à¸£à¸–à¸¥à¸šà¸™à¸±à¸à¹€à¸£à¸µà¸¢à¸™à¹„à¸”à¹‰" });
     } finally {
         client.release();
     }
@@ -245,7 +245,7 @@ router.post("/teachers", async (req, res) => {
     try {
         await ensureTeacherProfileColumns();
         const { teacher_code, first_name, last_name, password, prefix, national_id, birthday, gender, blood_group, employment_type, position, academic_rank, department, start_date, end_date, license_no, salary, status, phone, email, line_id, photo_url } = req.body;
-        if (!teacher_code) return res.status(400).json({ error: "กรุณากรอกรหัสครู" });
+        if (!teacher_code) return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸à¸£à¸­à¸à¸£à¸«à¸±à¸ªà¸„à¸£à¸¹" });
         const pass = password || "1234";
         const hash = await bcrypt.hash(pass, 10);
 
@@ -358,7 +358,7 @@ router.post("/advisors", async (req, res) => {
     try {
         const { teacher_id, class_level, year, semester } = req.body;
         if (!teacher_id || !class_level || !year || !semester) {
-            return res.status(400).json({ error: "กรุณากรอกข้อมูลให้ครบถ้วน" });
+            return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸à¸£à¸­à¸à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹ƒà¸«à¹‰à¸„à¸£à¸šà¸–à¹‰à¸§à¸™" });
         }
 
         const result = await pool.query(
@@ -452,11 +452,48 @@ router.get("/subjects", async (req, res) => {
 
 router.post("/subjects", async (req, res) => {
     try {
-        const { subject_code, name, credit } = req.body;
-        if (!subject_code || !name) return res.status(400).json({ error: "ข้อมูลไม่ครบ" });
+        await ensureSubjectColumns();
+        const {
+            subject_code,
+            name,
+            name_th,
+            name_en,
+            subject_type,
+            subject_group,
+            level,
+            credit,
+            total_hours,
+            description,
+            year,
+            semester
+        } = req.body;
+
+        const finalNameTh = (name_th || name || "").trim();
+        if (!subject_code || !finalNameTh) {
+            return res.status(400).json({ error: "กรุณากรอกข้อมูลให้ครบ (รหัสวิชา และชื่อวิชา)" });
+        }
+
         const result = await pool.query(
-            `INSERT INTO subjects(subject_code, name, credit) VALUES($1,$2,$3) RETURNING id`,
-            [subject_code, name, credit || 0]
+            `INSERT INTO subjects(
+                subject_code, name, name_th, name_en, credit, total_hours,
+                subject_type, subject_group, level, description, year, semester
+            )
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+            RETURNING id`,
+            [
+                subject_code,
+                finalNameTh,
+                finalNameTh,
+                name_en || null,
+                Number(credit || 0),
+                Number(total_hours || 0),
+                subject_type || null,
+                subject_group || null,
+                level || null,
+                description || null,
+                year ? Number(year) : null,
+                semester ? Number(semester) : null
+            ]
         );
         res.json({ success: true, id: result.rows[0].id });
     } catch (err) {
@@ -710,7 +747,7 @@ router.post("/projects", async (req, res) => {
         } = req.body;
 
         if (!name) {
-            return res.status(400).json({ error: "กรุณาระบุชื่อโครงการ" });
+            return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¸Šà¸·à¹ˆà¸­à¹‚à¸„à¸£à¸‡à¸à¸²à¸£" });
         }
 
         const result = await pool.query(
@@ -989,7 +1026,7 @@ router.post("/evaluation/topics", async (req, res) => {
         if (!auth.ok) return res.status(auth.status).json({ error: auth.message });
 
         if (!name || !year || !semester) {
-            return res.status(400).json({ error: "กรุณาระบุข้อมูลให้ครบ" });
+            return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹ƒà¸«à¹‰à¸„à¸£à¸š" });
         }
 
         const parsedAvg = avg_score === "" || avg_score === null || typeof avg_score === "undefined"
@@ -1018,7 +1055,7 @@ router.get("/evaluation/student", async (req, res) => {
     try {
         const { student_id, year, semester } = req.query;
         if (!student_id || !year || !semester) {
-            return res.status(400).json({ error: "กรุณาระบุข้อมูลให้ครบ" });
+            return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹ƒà¸«à¹‰à¸„à¸£à¸š" });
         }
 
         const result = await pool.query(
@@ -1042,7 +1079,7 @@ router.post("/evaluation/student", async (req, res) => {
         if (!auth.ok) return res.status(auth.status).json({ error: auth.message });
 
         if (!student_id || !year || !semester || !Array.isArray(data)) {
-            return res.status(400).json({ error: "กรุณาระบุข้อมูลให้ครบ" });
+            return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹ƒà¸«à¹‰à¸„à¸£à¸š" });
         }
 
         await pool.query(
@@ -1073,7 +1110,7 @@ router.put("/evaluation/topics/rename", async (req, res) => {
         if (!auth.ok) return res.status(auth.status).json({ error: auth.message });
 
         if (!old_name || !new_name || !year || !semester) {
-            return res.status(400).json({ error: "กรุณาระบุข้อมูลให้ครบ" });
+            return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹ƒà¸«à¹‰à¸„à¸£à¸š" });
         }
 
         await ensureCompetencyTopicsTable();
@@ -1105,7 +1142,7 @@ router.delete("/evaluation/topics", async (req, res) => {
         if (!auth.ok) return res.status(auth.status).json({ error: auth.message });
 
         if (!name || !year || !semester) {
-            return res.status(400).json({ error: "กรุณาระบุข้อมูลให้ครบ" });
+            return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸£à¸°à¸šà¸¸à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹ƒà¸«à¹‰à¸„à¸£à¸š" });
         }
 
         await ensureCompetencyTopicsTable();
@@ -1142,7 +1179,7 @@ router.post("/finance", async (req, res) => {
     try {
         const { title, category, amount, type, record_date, note } = req.body;
         if (!title || !amount || !type || !record_date) {
-            return res.status(400).json({ error: "ข้อมูลไม่ครบ" });
+            return res.status(400).json({ error: "à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹„à¸¡à¹ˆà¸„à¸£à¸š" });
         }
         const result = await pool.query(
             `INSERT INTO finance_records(title, category, amount, type, record_date, note)
@@ -1206,9 +1243,9 @@ router.get("/reports/attendance-summary", async (req, res) => {
         const days = Math.max(1, Number(req.query.days || 5));
         const result = await pool.query(
             `SELECT
-                SUM(CASE WHEN status ILIKE 'สาย%' THEN 1 ELSE 0 END) AS late,
-                SUM(CASE WHEN status ILIKE 'ขาด%' THEN 1 ELSE 0 END) AS absent,
-                SUM(CASE WHEN status ILIKE 'ลา%' THEN 1 ELSE 0 END) AS leave
+                SUM(CASE WHEN status ILIKE 'à¸ªà¸²à¸¢%' THEN 1 ELSE 0 END) AS late,
+                SUM(CASE WHEN status ILIKE 'à¸‚à¸²à¸”%' THEN 1 ELSE 0 END) AS absent,
+                SUM(CASE WHEN status ILIKE 'à¸¥à¸²%' THEN 1 ELSE 0 END) AS leave
              FROM teacher_attendance
              WHERE date >= CURRENT_DATE - ($1::int - 1)`,
             [days]
@@ -1225,3 +1262,4 @@ router.get("/reports/attendance-summary", async (req, res) => {
 });
 
 export default router;
+

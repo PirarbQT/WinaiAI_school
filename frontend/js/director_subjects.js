@@ -35,6 +35,11 @@ async function loadSubjects() {
     if (semester) params.set("semester", semester);
 
     const res = await fetch(`${API_BASE}/director/subjects?${params.toString()}`);
+    if (!res.ok) {
+        currentList = [];
+        renderSubjects();
+        return;
+    }
     currentList = await res.json();
     renderSubjects();
 }
@@ -114,19 +119,31 @@ async function saveSubject() {
         return;
     }
 
+    let res;
     if (id) {
-        await fetch(`${API_BASE}/director/subjects/${id}`, {
+        res = await fetch(`${API_BASE}/director/subjects/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
     } else {
-        await fetch(`${API_BASE}/director/subjects`, {
+        res = await fetch(`${API_BASE}/director/subjects`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
     }
+
+    if (!res?.ok) {
+        let msg = "บันทึกรายวิชาไม่สำเร็จ";
+        try {
+            const err = await res.json();
+            if (err?.error) msg = err.error;
+        } catch (_) {}
+        alert(msg);
+        return;
+    }
+
     resetForm();
     loadSubjects();
     closeModal("subjectModal");
