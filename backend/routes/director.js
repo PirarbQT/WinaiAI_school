@@ -59,6 +59,39 @@ async function ensureTeacherProfileColumns() {
     `);
 }
 
+async function ensureClassroomMaster() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS classroom_master (
+            id SERIAL PRIMARY KEY,
+            class_level VARCHAR(20) NOT NULL,
+            room VARCHAR(10) NOT NULL,
+            created_at TIMESTAMP DEFAULT NOW(),
+            UNIQUE (class_level, room)
+        )
+    `);
+
+    // Backfill from existing data so old records are available in dropdowns.
+    await pool.query(`
+        INSERT INTO classroom_master(class_level, room)
+        SELECT class_level, room
+        FROM (
+            SELECT DISTINCT
+                TRIM(class_level) AS class_level,
+                TRIM(COALESCE(NULLIF(classroom, ''), NULLIF(room, ''))) AS room
+            FROM students
+            WHERE class_level IS NOT NULL
+            UNION
+            SELECT DISTINCT
+                TRIM(class_level) AS class_level,
+                TRIM(COALESCE(NULLIF(classroom, ''), NULLIF(room, ''))) AS room
+            FROM subject_sections
+            WHERE class_level IS NOT NULL
+        ) src
+        WHERE src.class_level <> '' AND src.room <> ''
+        ON CONFLICT (class_level, room) DO NOTHING
+    `);
+}
+
 // SUMMARY
 router.get("/summary", async (req, res) => {
     try {
@@ -468,7 +501,7 @@ router.post("/subjects", async (req, res) => {
             semester
         } = req.body;
 
-        const finalNameTh = (name_th || name || "").trim();
+        const finalNameTh = (name_th || name_en || name || "").trim();
         if (!subject_code || !finalNameTh) {
             return res.status(400).json({ error: "กรุณากรอกข้อมูลให้ครบ (รหัสวิชา และชื่อวิชา)" });
         }
@@ -979,6 +1012,66 @@ router.get("/evaluation/summary", async (req, res) => {
         res.json(result.rows);
     } catch (err) {
         console.error("ERROR /director/evaluation/summary:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// CLASSROOM MASTER
+router.get("/classrooms", async (req, res) => {
+    try {
+        await ensureClassroomMaster();
+        const { class_level } = req.query;
+        const params = [];
+        let where = "";
+        if (class_level) {
+            params.push(class_level);
+            where = `WHERE class_level = $1`;
+        }
+        const result = await pool.query(
+            `SELECT id, class_level, room
+             FROM classroom_master
+             ${where}
+             ORDER BY class_level ASC, room ASC`,
+            params
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error("ERROR /director/classrooms GET:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.post("/classrooms", async (req, res) => {
+    try {
+        await ensureClassroomMaster();
+        const classLevel = String(req.body?.class_level || "").trim();
+        const room = String(req.body?.room || "").trim();
+        if (!classLevel || !room) {
+            return res.status(400).json({ error: "class_level and room are required" });
+        }
+        const result = await pool.query(
+            `INSERT INTO classroom_master(class_level, room)
+             VALUES ($1, $2)
+             ON CONFLICT (class_level, room) DO UPDATE
+             SET class_level = EXCLUDED.class_level
+             RETURNING id, class_level, room`,
+            [classLevel, room]
+        );
+        res.json({ success: true, classroom: result.rows[0] });
+    } catch (err) {
+        console.error("ERROR /director/classrooms POST:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+router.delete("/classrooms/:id", async (req, res) => {
+    try {
+        await ensureClassroomMaster();
+        const { id } = req.params;
+        await pool.query("DELETE FROM classroom_master WHERE id = $1", [id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error("ERROR /director/classrooms DELETE:", err);
         res.status(500).json({ error: "Server error" });
     }
 });

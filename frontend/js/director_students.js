@@ -2,6 +2,7 @@
 import { API_BASE } from "./config.js";
 
 let currentList = [];
+let classroomList = [];
 
 async function uploadProfilePhoto(role, id, file) {
     const formData = new FormData();
@@ -21,11 +22,14 @@ async function uploadProfilePhoto(role, id, file) {
 
 window.onload = async () => {
     requireDirectorLogin();
+    await loadClassroomOptions();
     qs("#searchStudentBtn").addEventListener("click", () => loadStudents());
+    qs("#classLevelFilter")?.addEventListener("change", onFilterLevelChange);
     qs("#openStudentModalBtn").addEventListener("click", () => {
         resetForm();
         openModal("studentModal");
     });
+    qs("#studentLevel")?.addEventListener("change", onFormLevelChange);
     qs("#saveStudentBtn").addEventListener("click", saveStudent);
     qs("#resetStudentBtn").addEventListener("click", () => {
         resetForm();
@@ -33,6 +37,84 @@ window.onload = async () => {
     });
     await loadStudents();
 };
+
+async function loadClassroomOptions() {
+    try {
+        const res = await fetch(`${API_BASE}/director/classrooms`);
+        if (!res.ok) return;
+        classroomList = await res.json();
+        renderLevelOptions();
+        renderRoomOptionsForFilter(qs("#classLevelFilter")?.value || "");
+        renderRoomOptionsForForm(qs("#studentLevel")?.value || "");
+    } catch (_) {
+        // Keep existing static options as fallback.
+    }
+}
+
+function getLevelList() {
+    return [...new Set(classroomList.map((r) => String(r.class_level || "").trim()).filter(Boolean))];
+}
+
+function getRoomList(level = "") {
+    return [...new Set(
+        classroomList
+            .filter((r) => !level || String(r.class_level) === String(level))
+            .map((r) => String(r.room || "").trim())
+            .filter(Boolean)
+    )];
+}
+
+function renderLevelOptions() {
+    const levels = getLevelList();
+    if (!levels.length) return;
+
+    const filter = qs("#classLevelFilter");
+    const form = qs("#studentLevel");
+    if (filter) {
+        const current = filter.value;
+        filter.innerHTML = `<option value="">ทั้งหมด</option>` + levels.map((lv) => `<option value="${lv}">${lv}</option>`).join("");
+        if (levels.includes(current)) filter.value = current;
+    }
+    if (form) {
+        const current = form.value;
+        form.innerHTML = `<option value="">เลือก...</option>` + levels.map((lv) => `<option value="${lv}">${lv}</option>`).join("");
+        if (levels.includes(current)) form.value = current;
+    }
+}
+
+function renderRoomOptionsForFilter(level = "") {
+    const rooms = getRoomList(level);
+    if (!rooms.length) return;
+    const select = qs("#roomFilter");
+    if (!select) return;
+    const current = select.value;
+    select.innerHTML = `<option value="">ทั้งหมด</option>` + rooms.map((room) => `<option value="${room}">${room}</option>`).join("");
+    if (rooms.includes(current)) {
+        select.value = current;
+    }
+}
+
+function renderRoomOptionsForForm(level = "") {
+    const rooms = getRoomList(level);
+    if (!rooms.length) return;
+    const select = qs("#studentRoom");
+    if (!select) return;
+    const current = select.value;
+    select.innerHTML = `<option value="">เลือก...</option>` + rooms.map((room) => `<option value="${room}">${room}</option>`).join("");
+    if (rooms.includes(current)) {
+        select.value = current;
+    }
+}
+
+function onFilterLevelChange() {
+    const level = qs("#classLevelFilter")?.value || "";
+    renderRoomOptionsForFilter(level);
+}
+
+function onFormLevelChange() {
+    const level = qs("#studentLevel")?.value || "";
+    renderRoomOptionsForForm(level);
+}
 
 async function loadStudents() {
     const level = qs("#classLevelFilter")?.value || "";
@@ -81,6 +163,7 @@ window.editStudent = function(id) {
     qs("#studentBirthday").value = s.birthday ? String(s.birthday).slice(0, 10) : "";
     qs("#studentPhone").value = s.phone || "";
     qs("#studentLevel").value = s.class_level || "";
+    renderRoomOptionsForForm(qs("#studentLevel").value || "");
     qs("#studentRoom").value = s.classroom || s.room || "";
     qs("#studentStatus").value = s.status || "กำลังศึกษา";
     qs("#parentName").value = s.parent_name || "";
@@ -164,6 +247,7 @@ function resetForm() {
     qs("#studentBirthday").value = "";
     qs("#studentPhone").value = "";
     qs("#studentLevel").value = "";
+    renderRoomOptionsForForm("");
     qs("#studentRoom").value = "";
     qs("#studentStatus").value = "กำลังศึกษา";
     qs("#parentName").value = "";
