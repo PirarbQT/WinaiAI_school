@@ -349,9 +349,32 @@ router.delete("/teachers/:id", async (req, res) => {
 });
 
 // ADVISOR (TEACHER ADVISORS)
+async function ensureAdvisorColumns() {
+    await pool.query(`
+        ALTER TABLE teacher_advisors
+            ADD COLUMN IF NOT EXISTS room VARCHAR(10)
+    `);
+
+    // Drop old unique key that blocks same class-level with different rooms.
+    await pool.query(`
+        DO $$
+        BEGIN
+            IF EXISTS (
+                SELECT 1
+                FROM pg_constraint
+                WHERE conname = 'teacher_advisors_class_level_year_semester_key'
+            ) THEN
+                ALTER TABLE teacher_advisors
+                DROP CONSTRAINT teacher_advisors_class_level_year_semester_key;
+            END IF;
+        END $$;
+    `);
+}
+
 router.get("/advisors", async (req, res) => {
     try {
-        const { year, semester, class_level } = req.query;
+        await ensureAdvisorColumns();
+        const { year, semester, class_level, room } = req.query;
         const params = [];
         const where = [];
 
@@ -369,14 +392,18 @@ router.get("/advisors", async (req, res) => {
             params.push(class_level);
             where.push(`ta.class_level = $${params.length}`);
         }
+        if (room) {
+            params.push(room);
+            where.push(`ta.room = $${params.length}`);
+        }
 
         const result = await pool.query(
-            `SELECT ta.id, ta.class_level, ta.year, ta.semester,
+            `SELECT ta.id, ta.class_level, ta.room, ta.year, ta.semester,
                     t.id AS teacher_id, t.teacher_code, t.first_name, t.last_name
              FROM teacher_advisors ta
              JOIN teachers t ON ta.teacher_id = t.id
              ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
-             ORDER BY ta.year DESC, ta.semester DESC, ta.class_level ASC`,
+             ORDER BY ta.year DESC, ta.semester DESC, ta.class_level ASC, ta.room ASC`,
             params
         );
 
@@ -389,19 +416,38 @@ router.get("/advisors", async (req, res) => {
 
 router.post("/advisors", async (req, res) => {
     try {
-        const { teacher_id, class_level, year, semester } = req.body;
-        if (!teacher_id || !class_level || !year || !semester) {
+        await ensureAdvisorColumns();
+        const { teacher_id, class_level, room, year, semester } = req.body;
+        if (!teacher_id || !class_level || !room || !year || !semester) {
             return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸à¸£à¸­à¸à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹ƒà¸«à¹‰à¸„à¸£à¸šà¸–à¹‰à¸§à¸™" });
         }
 
-        const result = await pool.query(
-            `INSERT INTO teacher_advisors(teacher_id, class_level, year, semester)
-             VALUES($1,$2,$3,$4)
-             ON CONFLICT (class_level, year, semester)
-             DO UPDATE SET teacher_id = EXCLUDED.teacher_id
-             RETURNING id`,
-            [teacher_id, class_level, year, semester]
+        // Upsert without depending on a unique index that may not exist in older databases.
+        const existing = await pool.query(
+            `SELECT id
+             FROM teacher_advisors
+             WHERE class_level=$1 AND room=$2 AND year=$3 AND semester=$4
+             LIMIT 1`,
+            [class_level, room, year, semester]
         );
+
+        let result;
+        if (existing.rows.length) {
+            result = await pool.query(
+                `UPDATE teacher_advisors
+                 SET teacher_id=$1
+                 WHERE id=$2
+                 RETURNING id`,
+                [teacher_id, existing.rows[0].id]
+            );
+        } else {
+            result = await pool.query(
+                `INSERT INTO teacher_advisors(teacher_id, class_level, room, year, semester)
+                 VALUES($1,$2,$3,$4,$5)
+                 RETURNING id`,
+                [teacher_id, class_level, room, year, semester]
+            );
+        }
 
         res.json({ success: true, id: result.rows[0].id });
     } catch (err) {
@@ -410,8 +456,31 @@ router.post("/advisors", async (req, res) => {
     }
 });
 
+router.put("/advisors/:id", async (req, res) => {
+    try {
+        await ensureAdvisorColumns();
+        const { id } = req.params;
+        const { teacher_id, class_level, room, year, semester } = req.body;
+        if (!teacher_id || !class_level || !room || !year || !semester) {
+            return res.status(400).json({ error: "à¸à¸£à¸¸à¸“à¸²à¸à¸£à¸­à¸à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹ƒà¸«à¹‰à¸„à¸£à¸šà¸–à¹‰à¸§à¸™" });
+        }
+
+        await pool.query(
+            `UPDATE teacher_advisors
+             SET teacher_id=$1, class_level=$2, room=$3, year=$4, semester=$5
+             WHERE id=$6`,
+            [teacher_id, class_level, room, year, semester, id]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error("ERROR /director/advisors PUT:", err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 router.delete("/advisors/:id", async (req, res) => {
     try {
+        await ensureAdvisorColumns();
         const { id } = req.params;
         await pool.query("DELETE FROM teacher_advisors WHERE id=$1", [id]);
         res.json({ success: true });

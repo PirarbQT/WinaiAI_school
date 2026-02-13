@@ -4730,3 +4730,15 @@ button#loginBtn:hover{
     width: 100%;
 }
 
+/* Popup layout for advisor edit */
+.advisor-form-vertical {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.advisor-form-vertical .advisor-actions .btn-primary {
+    margin-bottom: 0;
+}
+
